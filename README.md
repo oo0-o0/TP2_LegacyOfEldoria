@@ -1,5 +1,7 @@
 # ✶ Legacy of Eldoria: "Artifacts of Light" ✶
 
+`` Érika Liz & Sarah dos Santos ``
+
 . ݁₊ ⊹ . ݁˖ . **História** 
 
 A vida era pacífica em Eldoria, uma cidade mágica, repleta de mistérios e rodeada pela exuberante Floresta de Lumina. Conhecida por sua fonte mágica, a Árvore Eterna, Lumina era o coração pulsante do reino, alimentando a terra com sua energia vital. O povo de Eldoria vivia em harmonia, protegido por essa força ancestral.
@@ -23,9 +25,7 @@ Durante sua jornada, Kael enfrentará perigosos desafios, resolverá enigmas esq
 - **Plataforma**: Windows, Mac, Linux.
 - **Estilo**: RPG de Aventura, Mundo Aberto.
 
-✧ Codigicado por: ✧  
-- Érika Liz Augusto Moreira
-- Sarah dos Santos Oliveira
+
 
 
 · 　　 ⋆ 　　　 ˚ ˚ 　　 ✦  
