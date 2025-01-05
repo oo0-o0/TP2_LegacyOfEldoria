@@ -1,4 +1,0 @@
-menuBackground.png
-menuSound.mp3
-pixelifySans.ttf
-romantic.ttf
