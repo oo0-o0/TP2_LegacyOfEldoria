@@ -1,4 +1,4 @@
-package game.zelda;
+package game.zelda.states;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public interface GameState 

@@ -32,9 +32,10 @@ public class AssetsManager
         loadFont("titleFont", "assets/romantic.ttf", 120, com.badlogic.gdx.graphics.Color.WHITE);
         loadFont("buttonFont", "assets/pixelifySans.ttf", 56, com.badlogic.gdx.graphics.Color.WHITE);
         loadFont("buttonFontHover", "assets/pixelifySans.ttf", 60, new com.badlogic.gdx.graphics.Color(0.8549f, 1.0f, 0.6039f, 1.0f));
-
+        loadFont("storyFont", "assets/pixelifySans.ttf", 21, com.badlogic.gdx.graphics.Color.WHITE);
     }
 
+    
     private void loadFont(String fontKey, String fontPath, int size, com.badlogic.gdx.graphics.Color color) 
     {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontPath));

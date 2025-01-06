@@ -1,4 +1,4 @@
-package game.zelda;
+package game.zelda.states;
 
 public class GameContext 
 {

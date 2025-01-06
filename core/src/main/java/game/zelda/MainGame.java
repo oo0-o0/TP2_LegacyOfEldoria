@@ -3,6 +3,9 @@ package game.zelda;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import game.zelda.states.GameContext;
+import game.zelda.states.MenuState;
+
 public class MainGame extends ApplicationAdapter  
 {
     private SpriteBatch batch;

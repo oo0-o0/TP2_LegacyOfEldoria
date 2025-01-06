@@ -1,4 +1,4 @@
-package game.zelda;
+package game.zelda.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
+
+import game.zelda.AssetsManager;
 
 public class MenuState implements GameState 
 {
