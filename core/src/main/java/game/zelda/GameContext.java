@@ -1,4 +1,6 @@
-package game.zelda.states;
+package game.zelda;
+
+import game.zelda.states.GameState;
 
 public class GameContext 
 {

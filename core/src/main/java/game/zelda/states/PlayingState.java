@@ -2,6 +2,8 @@ package game.zelda.states;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import game.zelda.GameContext;
+
 public class PlayingState implements GameState
 {
     private GameContext gameContext;

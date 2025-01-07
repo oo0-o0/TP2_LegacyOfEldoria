@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.Align;
 import game.zelda.AssetsManager;
+import game.zelda.GameContext;
 
 public class StoryState implements GameState 
 {
@@ -33,12 +34,12 @@ public class StoryState implements GameState
     {
         images = new Texture[]
         {
-            new Texture(Gdx.files.internal("assets/story1.png")),
-            new Texture(Gdx.files.internal("assets/story2.png")),
-            new Texture(Gdx.files.internal("assets/story3.png"))
+            new Texture(Gdx.files.internal("assets/backgroundImages/story1.png")),
+            new Texture(Gdx.files.internal("assets/backgroundImages/story2.png")),
+            new Texture(Gdx.files.internal("assets/backgroundImages/story3.png"))
         };
 
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets/storyMusic.mp3"));
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets/sounds/storyMusic.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(0.5f);
         backgroundMusic.play();
@@ -77,8 +78,7 @@ public class StoryState implements GameState
             } 
             else 
             {
-                // Ir para o próximo estado quando acabar a história
-                gameContext.setState(new PlayingState(gameContext));
+               gameContext.setState(new PlayingState(gameContext));
             }
         }
     }
