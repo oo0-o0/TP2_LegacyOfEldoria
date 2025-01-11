@@ -19,9 +19,9 @@ public class StoryState implements GameState
     private String[] texts;
     private int currentTextIndex = 0;
     private String displayedText = "";
-    private float textSpeed = 0.1f; 
+    private float textSpeed = 0.08f; 
     private float elapsedTime = 0f;
-    private float switchTime = 38f; 
+    private float switchTime = 33f; 
     private float totalElapsedTime = 0f; 
 
     public StoryState(GameContext gameContext)
@@ -46,7 +46,7 @@ public class StoryState implements GameState
 
         texts = new String[]
         {
-            "-> A vida era pacífica em Eldoria, uma cidade mágica, repleta de mistérios e rodeada pela exuberante Floresta de Lumina. Conhecida por sua fonte mágica, a Árvore Eterna, Lumina, era o coração pulsante do reino, alimentando a terra com sua energia vital. O povo de Eldoria vivia em harmonia, protegido por essa força ancestral.",
+            "A vida era pacífica em Eldoria, uma cidade mágica, repleta de mistérios e rodeada pela exuberante Floresta de Lumina. Conhecida por sua fonte mágica, a Árvore Eterna, Lumina, era o coração pulsante do reino, alimentando a terra com sua energia vital. O povo de Eldoria vivia em harmonia, protegido por essa força ancestral.",
             "Entre eles, havia um elfo arqueiro chamado Kael, que passava seus dias explorando os bosques e aperfeiçoando sua mira. Para Kael, a vida era cheia de beleza, até que uma escuridão começou a se espalhar. Uma força sombria surgiu do nada, drenando a energia de Lumina. A floresta tornou-se perigosa, e criaturas hostis começaram a surgir.",
             "Com o futuro do lugar ameaçado, Kael foi escolhido pelo espírito da Árvore para embarcar em uma missão: restaurar o equilíbrio da floresta. Sua tarefa é reunir os Artefatos Luminares, relíquias de imenso poder que foram espalhadas pelo mundo para protegê-las de mãos erradas. A sua missão, é controlá-lo nessa aventura!"
         };
@@ -66,7 +66,7 @@ public class StoryState implements GameState
             elapsedTime = 0f;
         }
 
-        // Trocar para o próximo texto e imagem
+        // Troca para o próximo texto e imagem
         if (totalElapsedTime > switchTime) 
         {
             totalElapsedTime = 0f;

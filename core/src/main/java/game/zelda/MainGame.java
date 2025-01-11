@@ -2,7 +2,12 @@ package game.zelda;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import game.zelda.states.GameOverState;
 import game.zelda.states.MenuState;
+import game.zelda.states.PlayingState;
+import game.zelda.states.StoryState;
+import game.zelda.states.WinningState;
 
 public class MainGame extends ApplicationAdapter  
 {
