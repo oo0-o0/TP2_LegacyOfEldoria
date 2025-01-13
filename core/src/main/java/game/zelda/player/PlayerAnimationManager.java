@@ -9,7 +9,6 @@ public class PlayerAnimationManager
     public enum PlayerState 
     {
         IDLE,
-        RUNNING,
         JUMP,
         ATTACK_NORMAL,
         ATTACK_POWERED,
@@ -35,10 +34,17 @@ public class PlayerAnimationManager
 
     public void setState(PlayerState newState) 
     {
+        if (newState == PlayerState.ATTACK_NORMAL || newState == PlayerState.ATTACK_POWERED || newState == PlayerState.DEATH) 
+        {
+            this.currentState = newState;
+            this.animationTimer = 0f;
+            return;
+        }
+
         if (this.currentState != newState) 
         {
             this.currentState = newState;
-            this.animationTimer = 0f; 
+            this.animationTimer = 0f;
         }
     }
 
@@ -52,11 +58,28 @@ public class PlayerAnimationManager
         Animation<TextureRegion> animation = animations.get(currentState);
         if (animation != null) 
         {
-            boolean looping = (currentState == PlayerState.RUNNING);
+            // Ativa o looping apenas para estados contínuos
+            boolean looping = (currentState == PlayerState.IDLE);
             return animation.getKeyFrame(animationTimer, looping);
         }
         return null;
     }
+
+    public boolean isAnimationFinished() 
+    {
+        Animation<TextureRegion> animation = animations.get(currentState);
+        if (animation != null) 
+        {
+            return animation.isAnimationFinished(animationTimer);
+        }
+        return true;
+    }
+
+    public PlayerState getCurrentState() 
+    {
+        return this.currentState;
+    }
+
 
     public void update(float deltaTime)
     {

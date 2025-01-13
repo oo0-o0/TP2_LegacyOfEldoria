@@ -10,8 +10,7 @@ public class Player
     private Vector2 position;
     private Vector2 velocity;
     private boolean isJumping;
-    private boolean isRunning;
-    private PlayerAnimationManager animationManager;
+    public PlayerAnimationManager animationManager;
     
     public Player(float startX, float startY) 
     {
@@ -19,11 +18,9 @@ public class Player
         this.velocity = new Vector2(0, 0);
         this.animationManager = new PlayerAnimationManager();
         this.isJumping = false;
-        this.isRunning = false;
 
         AssetsManager assetsManager = AssetsManager.getInstance();
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.IDLE, assetsManager.getAnimation("idle"));
-        animationManager.loadAnimation(PlayerAnimationManager.PlayerState.RUNNING, assetsManager.getAnimation("running"));
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.JUMP, assetsManager.getAnimation("jump"));
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.ATTACK_NORMAL, assetsManager.getAnimation("attackNormal"));
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.ATTACK_POWERED, assetsManager.getAnimation("attackPowered"));
@@ -31,12 +28,17 @@ public class Player
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.DEATH, assetsManager.getAnimation("death"));
     }
 
+    public Vector2 getPosition() 
+    {
+        return position;
+    }
+
     public void move(float dx, float dy) 
     {
         position.add(dx, dy);
         if (!isJumping) 
         {
-            animationManager.setState(isRunning ? PlayerAnimationManager.PlayerState.RUNNING : PlayerAnimationManager.PlayerState.IDLE);
+            animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
         }
     }
 
@@ -48,20 +50,26 @@ public class Player
             animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
         }
     }
-
+    
     public void attack() 
     {
-        animationManager.setState(PlayerAnimationManager.PlayerState.ATTACK_NORMAL);
+        if (animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.DEATH) 
+            return;
+    
+        if (animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.ATTACK_NORMAL &&
+            animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.TAKE_HIT &&
+            animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.JUMP) 
+        {
+            animationManager.setState(PlayerAnimationManager.PlayerState.ATTACK_NORMAL);
+        }
     }
-
+    
     public void jump() 
     {
-        if (!isJumping) 
-        {
-            isJumping = true;
-            animationManager.setState(PlayerAnimationManager.PlayerState.JUMP);
-            velocity.y = 500; // Ajuste a altura do pulo conforme necessário
-        }
+        if (animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.DEATH) 
+            return;
+
+        animationManager.setState(PlayerAnimationManager.PlayerState.JUMP);
     }
 
     public void takeHit() 
@@ -78,28 +86,31 @@ public class Player
 
     public void update(float deltaTime) 
     {
-        if (isJumping) 
-        {
-            velocity.y -= 980 * deltaTime;
-            if (position.y <= 0) 
-            {
+        if (isJumping) {
+            velocity.y -= 980 * deltaTime; 
+            
+            if (position.y <= 0) {
                 position.y = 0;
                 isJumping = false;
+        
+                if (animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.DEATH) {
+                    animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
+                }
+            }
+        }        
+    
+        if (animationManager.isAnimationFinished()) 
+        {
+            if (animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.ATTACK_NORMAL || 
+                animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.JUMP || 
+                animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.TAKE_HIT) 
+            {
                 animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
             }
         }
+    
         position.add(velocity.x * deltaTime, velocity.y * deltaTime);
         animationManager.update(deltaTime);
-    }
-
-    public void setRunning(boolean isRunning) 
-    {
-        this.isRunning = isRunning;
-    }
-
-    public boolean isRunning() 
-    {
-        return isRunning;
     }
 
     public void render(Batch batch) 

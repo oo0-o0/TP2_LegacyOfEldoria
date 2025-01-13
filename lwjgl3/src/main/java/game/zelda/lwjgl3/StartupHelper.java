@@ -33,11 +33,12 @@ import java.util.ArrayList;
  * <a href="https://jvm-gaming.org/t/starting-jvm-on-mac-with-xstartonfirstthread-programmatically/57547">Based on this java-gaming.org post by kappa</a>
  * @author damios
  */
-public class StartupHelper {
-
+public class StartupHelper 
+{
     private static final String JVM_RESTARTED_ARG = "jvmIsRestarted";
 
-    private StartupHelper() {
+    private StartupHelper() 
+    {
         throw new UnsupportedOperationException();
     }
 
@@ -65,36 +66,41 @@ public class StartupHelper {
      * @return whether a new JVM was started and thus no code should be executed
      *         in this one
      */
-    public static boolean startNewJvmIfRequired(boolean redirectOutput) {
+    public static boolean startNewJvmIfRequired(boolean redirectOutput) 
+    {
         String osName = System.getProperty("os.name").toLowerCase();
-        if (!osName.contains("mac")) {
-            if (osName.contains("windows")) {
-// Here, we are trying to work around an issue with how LWJGL3 loads its extracted .dll files.
-// By default, LWJGL3 extracts to the directory specified by "java.io.tmpdir", which is usually the user's home.
-// If the user's name has non-ASCII (or some non-alphanumeric) characters in it, that would fail.
-// By extracting to the relevant "ProgramData" folder, which is usually "C:\ProgramData", we avoid this.
+        if (!osName.contains("mac")) 
+        {
+            if (osName.contains("windows")) 
+            {
+                // Here, we are trying to work around an issue with how LWJGL3 loads its extracted .dll files.
+                // By default, LWJGL3 extracts to the directory specified by "java.io.tmpdir", which is usually the user's home.
+                // If the user's name has non-ASCII (or some non-alphanumeric) characters in it, that would fail.
+                // By extracting to the relevant "ProgramData" folder, which is usually "C:\ProgramData", we avoid this.
                 System.setProperty("java.io.tmpdir", System.getenv("ProgramData") + "/libGDX-temp");
             }
             return false;
         }
 
         // There is no need for -XstartOnFirstThread on Graal native image
-        if (!System.getProperty("org.graalvm.nativeimage.imagecode", "").isEmpty()) {
+        if (!System.getProperty("org.graalvm.nativeimage.imagecode", "").isEmpty()) 
+        {
             return false;
         }
 
         long pid = LibC.getpid();
 
         // check whether -XstartOnFirstThread is enabled
-        if ("1".equals(System.getenv("JAVA_STARTED_ON_FIRST_THREAD_" + pid))) {
+        if ("1".equals(System.getenv("JAVA_STARTED_ON_FIRST_THREAD_" + pid))) 
+        {
             return false;
         }
 
         // check whether the JVM was previously restarted
         // avoids looping, but most certainly leads to a crash
-        if ("true".equals(System.getProperty(JVM_RESTARTED_ARG))) {
-            System.err.println(
-                    "There was a problem evaluating whether the JVM was started with the -XstartOnFirstThread argument.");
+        if ("true".equals(System.getProperty(JVM_RESTARTED_ARG))) 
+        {
+            System.err.println( "There was a problem evaluating whether the JVM was started with the -XstartOnFirstThread argument.");
             return false;
         }
 
@@ -106,9 +112,9 @@ public class StartupHelper {
         // If targeting Java 9 or higher, you could use the following instead of the above line:
         //String javaExecPath = ProcessHandle.current().info().command().orElseThrow();
 
-        if (!(new File(javaExecPath)).exists()) {
-            System.err.println(
-                    "A Java installation could not be found. If you are distributing this app with a bundled JRE, be sure to set the -XstartOnFirstThread argument manually!");
+        if (!(new File(javaExecPath)).exists()) 
+        {
+            System.err.println("A Java installation could not be found. If you are distributing this app with a bundled JRE, be sure to set the -XstartOnFirstThread argument manually!");
             return false;
         }
 
@@ -119,39 +125,47 @@ public class StartupHelper {
         jvmArgs.add("-cp");
         jvmArgs.add(System.getProperty("java.class.path"));
         String mainClass = System.getenv("JAVA_MAIN_CLASS_" + pid);
-        if (mainClass == null) {
+        if (mainClass == null) 
+        {
             StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-            if (trace.length > 0) {
+            if (trace.length > 0) 
+            {
                 mainClass = trace[trace.length - 1].getClassName();
-            } else {
+            } 
+            else 
+            {
                 System.err.println("The main class could not be determined.");
                 return false;
             }
         }
         jvmArgs.add(mainClass);
 
-        try {
-            if (!redirectOutput) {
+        try 
+        {
+            if (!redirectOutput) 
+            {
                 ProcessBuilder processBuilder = new ProcessBuilder(jvmArgs);
                 processBuilder.start();
-            } else {
-                Process process = (new ProcessBuilder(jvmArgs))
-                        .redirectErrorStream(true).start();
-                BufferedReader processOutput = new BufferedReader(
-                        new InputStreamReader(process.getInputStream()));
+            } 
+            else 
+            {
+                Process process = (new ProcessBuilder(jvmArgs)).redirectErrorStream(true).start();
+                BufferedReader processOutput = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 String line;
 
-                while ((line = processOutput.readLine()) != null) {
+                while ((line = processOutput.readLine()) != null) 
+                {
                     System.out.println(line);
                 }
 
                 process.waitFor();
             }
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             System.err.println("There was a problem restarting the JVM");
             e.printStackTrace();
         }
-
         return true;
     }
 
@@ -173,7 +187,8 @@ public class StartupHelper {
      * @return whether a new JVM was started and thus no code should be executed
      *         in this one
      */
-    public static boolean startNewJvmIfRequired() {
+    public static boolean startNewJvmIfRequired() 
+    {
         return startNewJvmIfRequired(true);
     }
 }

@@ -49,7 +49,6 @@ public class AssetsManager
 
         // Carregamento das animações do jogador (talvez eu adicione mais depois, ou nao, kkkkk talvez nem use todas essas)
         loadAnimationFromImages("idle", generatePaths("assets/playerWalk/idle_", 1, 12), 0.1f, Animation.PlayMode.LOOP);
-        loadAnimationFromImages("running", generatePaths("assets/run/run_", 1, 10), 0.1f, Animation.PlayMode.LOOP);
         loadAnimationFromImages("jump", generatePaths("assets/jump/jump_", 1, 22), 0.1f, Animation.PlayMode.LOOP);
         loadAnimationFromImages("attackNormal", generatePaths("assets/2_atk/2_atk_", 1, 15), 0.1f, Animation.PlayMode.LOOP);
         loadAnimationFromImages("attackPowered", generatePaths("assets/sp_atk/sp_atk_", 1, 17), 0.1f, Animation.PlayMode.LOOP);
