@@ -11,7 +11,6 @@ public class PlayerAnimationManager
         IDLE,
         JUMP,
         ATTACK_NORMAL,
-        ATTACK_POWERED,
         TAKE_HIT,
         DEATH
     }
@@ -34,7 +33,7 @@ public class PlayerAnimationManager
 
     public void setState(PlayerState newState) 
     {
-        if (newState == PlayerState.ATTACK_NORMAL || newState == PlayerState.ATTACK_POWERED || newState == PlayerState.DEATH) 
+        if (newState == PlayerState.ATTACK_NORMAL || newState == PlayerState.DEATH) 
         {
             this.currentState = newState;
             this.animationTimer = 0f;
