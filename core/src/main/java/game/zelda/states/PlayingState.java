@@ -29,7 +29,6 @@ public class PlayingState implements GameState
 
     public PlayingState(GameContext gameContext) 
     {
-
         float viewportWidth = Gdx.graphics.getWidth();
         float viewportHeight = Gdx.graphics.getHeight();
         this.cameraController = new CameraController(viewportWidth, viewportHeight);
@@ -41,7 +40,6 @@ public class PlayingState implements GameState
         this.moveCommand = new MoveCommand(player, 250f);
         this.attackCommand = new AttackCommand(player);
 
-        // Inicializa o inventário
         this.inventory = new InventoryGame();
     }
 
@@ -51,10 +49,8 @@ public class PlayingState implements GameState
         handleInput(deltaTime);
         player.update(deltaTime);
     
-        // Atualiza a posição da câmera principal
         cameraController.update(player.getPosition());
     
-        // Atualiza o mapa de colisão do jogador
         player.updateColisionMap();
     }    
 
@@ -157,10 +153,8 @@ public class PlayingState implements GameState
 
         batch.end();
     
-        // Restaurar a viewport original
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     
-        // Renderizar a borda do mini mapa
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(1, 1, 1, 1);
         shapeRenderer.rect(x, y, width, height);

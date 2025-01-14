@@ -1,8 +1,5 @@
 package game.zelda.map;
 
-import java.awt.Polygon;
-import java.util.List;
-
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMap;

@@ -2,6 +2,7 @@ package game.zelda.player;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import game.zelda.AssetsManager;
@@ -87,36 +88,40 @@ public class Player
         velocity.set(0, 0); 
     }
 
-    public void update(float deltaTime) 
-    {
-        if (isJumping) 
-        {
-            velocity.y -= 980 * deltaTime; 
-            
-            if (position.y <= 0) 
-            {
+   public void update(float deltaTime) {
+        if (isJumping) {
+            velocity.y -= 980 * deltaTime;
+            if (position.y <= 0) {
                 position.y = 0;
                 isJumping = false;
-        
+
                 if (animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.DEATH) {
                     animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
                 }
             }
         }        
-    
-        if (animationManager.isAnimationFinished()) 
-        {
+
+        if (animationManager.isAnimationFinished()) {
             if (animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.ATTACK_NORMAL || 
                 animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.JUMP || 
-                animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.TAKE_HIT) 
-            {
+                animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.TAKE_HIT) {
                 animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
             }
         }
-    
+
+        // Atualize a posição
         position.add(velocity.x * deltaTime, velocity.y * deltaTime);
+
+        // Restrinja a posição dentro dos limites do mapa
+        float mapWidth = collisionLayer.getWidth() * collisionLayer.getTileWidth();
+        float mapHeight = collisionLayer.getHeight() * collisionLayer.getTileHeight();
+
+        position.x = MathUtils.clamp(position.x, 0, mapWidth - 35); // Considerando a largura do player
+        position.y = MathUtils.clamp(position.y, 0, mapHeight - 30); // Considerando a altura do player
+
         animationManager.update(deltaTime);
     }
+
 
     public void updateColisionMap() 
     {
