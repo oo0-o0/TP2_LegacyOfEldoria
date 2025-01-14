@@ -1,5 +1,8 @@
 package game.zelda.inventory;
 
+import java.util.Random;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -7,34 +10,65 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.utils.Array;
 import game.zelda.AssetsManager;
+import game.zelda.observer.Observer;
+import game.zelda.observer.Subject;
 
-public class InventoryGame 
+public class InventoryGame implements Subject
 {
     private Texture inventoryIcon, inventoryBackground;
-    private Texture emptySlot, itemTexture1, itemTexture2;
+    private Texture emptySlot, itemTexture1, itemTexture2, itemTexture3, itemTexture4, itemTexture5, itemTexture6, itemTexture7, itemTexture8;
     private boolean isInventoryOpen = false;
     private Array<Item> itemsOnMap;
     private Array<Item> inventoryItems;
-    private int inventorySize = 8; // 8 slots
+    private Array<Observer> observers;
+    private int inventorySize = 8; 
     private BitmapFont font;
     private GlyphLayout glyphLayout;
 
     public InventoryGame() 
     {
-        inventoryBackground = new Texture("assets/backUI.png");
-        inventoryIcon = new Texture("assets/inventoryIcon.png");
-        emptySlot = new Texture("assets/slot.png");
+        inventoryBackground = new Texture("assets/inventory/backUI.png");
+        inventoryIcon = new Texture("assets//inventory/inventoryIcon.png");
+        emptySlot = new Texture("assets/inventory/slot.png");
+
         itemTexture1 = new Texture("assets/itens/potion.png");
         itemTexture2 = new Texture("assets/itens/book.png");
+        itemTexture3 = new Texture("assets/itens/goblet.png");
+        itemTexture4 = new Texture("assets/itens/key.png");
+        itemTexture5 = new Texture("assets/itens/charm.png");
+        itemTexture6 = new Texture("assets/itens/healthPotion.png");
+        itemTexture7 = new Texture("assets/itens/wand.png");
+        itemTexture8 = new Texture("assets/itens/sword.png");
+
+        font = AssetsManager.getInstance().getFont("inventoryFont");
 
         itemsOnMap = new Array<>();
         inventoryItems = new Array<>();
+        observers = new Array<>();
 
-        font = AssetsManager.getInstance().getFont("inventoryFont");
         glyphLayout = new GlyphLayout();
 
-        itemsOnMap.add(new Item(itemTexture1, new Rectangle(200, 200, 32, 32), "Item 1"));
-        itemsOnMap.add(new Item(itemTexture2, new Rectangle(400, 400, 32, 32), "Item 2"));
+        Texture[] itemTextures = {itemTexture1, itemTexture2, itemTexture3, itemTexture4, itemTexture5, itemTexture6, itemTexture7, itemTexture8};
+        String[] itemNames = {"Poção", "Livro", "Cálice", "Chave", "Colar", "Poção da Vida", "Varinha", "Arma"};
+
+        // Coloca eles em lugares aleatorios
+        Random random = new Random();
+        for (int i = 0; i < itemTextures.length; i++) 
+        {
+            float x = random.nextInt(Gdx.graphics.getWidth() - 32); // Posição aleatória no eixo X
+            float y = random.nextInt(Gdx.graphics.getHeight() - 32); // Posição aleatória no eixo Y
+            itemsOnMap.add(new Item(itemTextures[i], new Rectangle(x, y, 32, 32), itemNames[i]));
+        }
+
+        // Outra opcao caso isso de merda pelo mapa (tipo agora ele vai em areas que o divo nao anda,kkkk) so mudar o x e y
+        /*itemsOnMap.add(new Item(itemTexture1, new Rectangle(200, 200, 32, 32), "Poção"));
+        itemsOnMap.add(new Item(itemTexture2, new Rectangle(400, 400, 32, 32), "Livro"));
+        itemsOnMap.add(new Item(itemTexture3, new Rectangle(300, 400, 32, 32), "Cálice"));
+        itemsOnMap.add(new Item(itemTexture4, new Rectangle(100, 400, 32, 32), "Chave"));
+        itemsOnMap.add(new Item(itemTexture5, new Rectangle(440, 400, 32, 32), "Colar"));
+        itemsOnMap.add(new Item(itemTexture6, new Rectangle(400, 300, 32, 32), "Poção da Vida"));
+        itemsOnMap.add(new Item(itemTexture7, new Rectangle(400, 100, 32, 32), "Varinha"));
+        itemsOnMap.add(new Item(itemTexture8, new Rectangle(310, 150, 32, 32), "Arma"));*/
     }
 
     public boolean isInventoryOpen() 
@@ -45,7 +79,7 @@ public class InventoryGame
     public void toggleInventory() 
     {
         isInventoryOpen = !isInventoryOpen;
-        inventoryIcon = new Texture(isInventoryOpen ? "assets/inventoryIconOpen.png" : "assets/inventoryIcon.png");
+        inventoryIcon = new Texture(isInventoryOpen ? "assets/inventory/inventoryIconOpen.png" : "assets/inventory/inventoryIcon.png");
     }
 
     public void renderInventory(SpriteBatch batch) 
@@ -92,13 +126,14 @@ public class InventoryGame
 
     public void collectItemNearPlayer(float playerX, float playerY, float radius) 
     {
-        for (int i = itemsOnMap.size - 1; i >= 0; i--) 
+        for (int i = itemsOnMap.size - 1; i >= 0; i--)
         {
             Item item = itemsOnMap.get(i);
             if (item.isWithinRadius(playerX, playerY, radius) && inventoryItems.size < inventorySize) 
             {
                 inventoryItems.add(item);
                 itemsOnMap.removeIndex(i);
+                notifyObservers(item);  
                 break;
             }
         }
@@ -121,4 +156,32 @@ public class InventoryGame
         itemTexture2.dispose();
         font.dispose();
     }
+
+    @Override
+    public void registerObserver(Observer observer) 
+    {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) 
+    {
+        observers.removeValue(observer, false);
+    }
+
+    @Override
+    public void notifyObservers(Object event) 
+    {
+        for (Observer observer : observers) 
+        {
+            try 
+            {
+                observer.update(event);
+            } 
+            catch (Exception e) 
+            {
+                System.err.println("Erro ao notificar observador: " + observer + ", " + e.getMessage());
+            }
+        }
+    }    
 }

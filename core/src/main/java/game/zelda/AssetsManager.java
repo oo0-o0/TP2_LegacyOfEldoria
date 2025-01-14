@@ -58,11 +58,6 @@ public class AssetsManager
         loadAnimationFromImages("attackPowered", generatePaths("assets/sp_atk/sp_atk_", 1, 17), 0.1f, Animation.PlayMode.LOOP);
         loadAnimationFromImages("takeHit", generatePaths("assets/take_hit/take_hit_", 1, 6), 0.1f, Animation.PlayMode.LOOP);
         loadAnimationFromImages("death", generatePaths("assets/losingAnimation/death_", 1, 19), 0.1f, Animation.PlayMode.LOOP);
-
-        loadTexture("healthPotion", "assets/itens/healthPotion.png");
-        loadTexture("bomb", "assets/itens/potion.png");
-        loadTexture("sword", "assets/itens/sword.png");
-
     }
 
     private void loadFont(String fontKey, String fontPath, int size, com.badlogic.gdx.graphics.Color color) 

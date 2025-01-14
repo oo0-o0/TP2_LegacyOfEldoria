@@ -1,12 +1,8 @@
 package game.zelda.observer;
 
-public interface Subject {
-	
-	void subscribe(Observer observer);
-	
-	void unsubscribe(Observer observer);
-	
-	public void notifyObservers(Observer observer);
+public interface Subject 
+{
+    void registerObserver(Observer observer);
+    void removeObserver(Observer observer);
+    void notifyObservers(Object event); 
 }
-
-//Extender o observer para player (?) para observar itens e avisar inventory

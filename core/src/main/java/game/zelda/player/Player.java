@@ -1,27 +1,37 @@
 package game.zelda.player;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import game.zelda.AssetsManager;
+import game.zelda.inventory.InventoryGame;
+import game.zelda.inventory.Item;
+import game.zelda.observer.Observer;
 
-public class Player 
+public class Player implements Observer
 {
+    private Sound itemCollectSound;
     private Vector2 position;
     private Vector2 velocity;
     private boolean isJumping;
     public PlayerAnimationManager animationManager;
     private TiledMapTileLayer collisionLayer;
+    private InventoryGame inventory;
     
-    public Player(float startX, float startY, TiledMapTileLayer collisionLayer)  
+    public Player(float startX, float startY, TiledMapTileLayer collisionLayer, InventoryGame inventory)  
     {
         this.position = new Vector2(startX, startY);
         this.velocity = new Vector2(0, 0);
         this.animationManager = new PlayerAnimationManager();
         this.isJumping = false;
         this.collisionLayer = collisionLayer;
+        this.inventory = inventory;
+        inventory.registerObserver(this); 
 
         AssetsManager assetsManager = AssetsManager.getInstance();
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.IDLE, assetsManager.getAnimation("idle"));
@@ -30,6 +40,8 @@ public class Player
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.ATTACK_POWERED, assetsManager.getAnimation("attackPowered"));
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.TAKE_HIT, assetsManager.getAnimation("takeHit"));
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.DEATH, assetsManager.getAnimation("death"));
+
+        itemCollectSound = Gdx.audio.newSound(Gdx.files.internal("assets/sounds/collectSound.mp3"));
     }
 
     public Vector2 getPosition() 
@@ -88,8 +100,31 @@ public class Player
         velocity.set(0, 0); 
     }
 
+    public void collectItem() 
+    {
+        if (Gdx.input.isKeyPressed(Input.Keys.C)) 
+        {
+            inventory.collectItemNearPlayer(position.x, position.y, 120f); 
+        }
+    }
+
+    @Override
+    public void update(Object event) 
+    {
+        if (event instanceof Item) 
+        {
+            Item item = (Item) event;
+            System.out.println("Item coletado: " + item.getName());
+            if (itemCollectSound != null) 
+            {
+                itemCollectSound.play();
+            }
+        }
+    }
+
    public void update(float deltaTime) 
    {
+        collectItem();
         if (isJumping)
         {
             velocity.y -= 980 * deltaTime;
@@ -118,7 +153,7 @@ public class Player
         // Atualize a posição
         position.add(velocity.x * deltaTime, velocity.y * deltaTime);
 
-        // Restrinja a posição dentro dos limites do mapa
+        // Restringe a posição dentro dos limites do mapa
         float mapWidth = collisionLayer.getWidth() * collisionLayer.getTileWidth();
         float mapHeight = collisionLayer.getHeight() * collisionLayer.getTileHeight();
 
@@ -240,5 +275,10 @@ public class Player
     public void render(Batch batch) 
     {
         batch.draw(animationManager.getCurrentFrame(), position.x, position.y);
+    }
+
+    public void dispose() 
+    {
+        itemCollectSound.dispose();
     }
 }

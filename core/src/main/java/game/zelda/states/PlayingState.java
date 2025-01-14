@@ -11,7 +11,6 @@ import game.zelda.GameContext;
 import game.zelda.camera.CameraController;
 import game.zelda.inventory.InventoryGame;
 import game.zelda.map.Map;
-import game.zelda.player.commands.AttackCommand;
 import game.zelda.player.commands.MoveCommand;
 import game.zelda.player.Player;
 import game.zelda.player.PlayerAnimationManager;
@@ -21,13 +20,18 @@ public class PlayingState implements GameState
     private Player player;
     private GameContext gameContext;
     private MoveCommand moveCommand;
-    private AttackCommand attackCommand;
     //private CameraController cameraController;
     private ShapeRenderer shapeRenderer;
     private InventoryGame inventory;
     private Map map;
 
     public PlayingState(GameContext gameContext) 
+    {
+        this.gameContext = gameContext;
+    }
+
+    @Override
+    public void enter() 
     {
         float viewportWidth = Gdx.graphics.getWidth();
         float viewportHeight = Gdx.graphics.getHeight();
@@ -36,11 +40,10 @@ public class PlayingState implements GameState
 
         this.gameContext = gameContext;
         this.map = new Map();
-        this.player = new Player(100, 100, (TiledMapTileLayer) map.getLayers());
-        this.moveCommand = new MoveCommand(player, 250f);
-        this.attackCommand = new AttackCommand(player);
-
         this.inventory = new InventoryGame();
+
+        this.player = new Player(100, 100, (TiledMapTileLayer) map.getLayers(), inventory);
+        this.moveCommand = new MoveCommand(player, 250f);
     }
 
     @Override
@@ -50,7 +53,6 @@ public class PlayingState implements GameState
         player.update(deltaTime);
     
         //cameraController.update(player.getPosition());
-    
         player.updateColisionMap();
     }    
 
@@ -84,12 +86,6 @@ public class PlayingState implements GameState
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) 
         {
             player.attack();
-        }
-
-        // Coletar item próximo (nao ta funcionando ainda rsrsrs)
-        if (Gdx.input.isKeyJustPressed(Input.Keys.C)) 
-        {
-            inventory.collectItemNearPlayer(player.getPosition().x, player.getPosition().y, 50);
         }
 
         // Abrir/fechar o inventário
@@ -161,12 +157,6 @@ public class PlayingState implements GameState
         shapeRenderer.end();
     }
     
-    @Override
-    public void enter() 
-    {
-        Gdx.app.log("PlayingState", "Entering PlayingState.");
-    }
-
     @Override
     public void exit() 
     {

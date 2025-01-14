@@ -1,6 +1,6 @@
 package game.zelda.observer;
 
-public interface Observer {
-	 //void update(objectCollected);
-	// void update(damage);
+public interface Observer 
+{
+    void update(Object event);
 }

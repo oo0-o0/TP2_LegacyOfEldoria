@@ -16,10 +16,15 @@ public class Item
         this.name = name;
     }
 
-    public boolean isWithinRadius(float x, float y, float radius) 
+    public boolean isWithinRadius(float playerX, float playerY, float radius) 
     {
-        float dx = bounds.x - x;
-        float dy = bounds.y - y;
+        float dx = playerX - (bounds.x + bounds.width / 2);
+        float dy = playerY - (bounds.y + bounds.height / 2);
         return Math.sqrt(dx * dx + dy * dy) <= radius;
+    }
+
+    public String getName() 
+    {
+        return name;
     }
 }
