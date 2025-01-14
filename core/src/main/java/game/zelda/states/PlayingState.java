@@ -9,11 +9,12 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
 import game.zelda.GameContext;
 import game.zelda.camera.CameraController;
+import game.zelda.inventory.InventoryGame;
+import game.zelda.map.Map;
 import game.zelda.player.commands.AttackCommand;
 import game.zelda.player.commands.MoveCommand;
 import game.zelda.player.Player;
 import game.zelda.player.PlayerAnimationManager;
-import game.zelda.map.Map;
 
 public class PlayingState implements GameState 
 {
@@ -23,20 +24,25 @@ public class PlayingState implements GameState
     private AttackCommand attackCommand;
     private CameraController cameraController;
     private ShapeRenderer shapeRenderer;
+    private InventoryGame inventory;
     private Map map;
 
-    public PlayingState(GameContext gameContext)
+    public PlayingState(GameContext gameContext) 
     {
-        this.gameContext = gameContext;
+
         float viewportWidth = Gdx.graphics.getWidth();
         float viewportHeight = Gdx.graphics.getHeight();
         this.cameraController = new CameraController(viewportWidth, viewportHeight);
-        this.shapeRenderer = new ShapeRenderer(); 
+        this.shapeRenderer = new ShapeRenderer();
+
+        this.gameContext = gameContext;
         this.map = new Map();
         this.player = new Player(100, 100, (TiledMapTileLayer) map.getLayers());
-        this.moveCommand = new MoveCommand(player, 250f); 
+        this.moveCommand = new MoveCommand(player, 250f);
         this.attackCommand = new AttackCommand(player);
-        
+
+        // Inicializa o inventário
+        this.inventory = new InventoryGame();
     }
 
     @Override
@@ -44,10 +50,13 @@ public class PlayingState implements GameState
     {
         handleInput(deltaTime);
         player.update(deltaTime);
-        
-        cameraController.update(player.getPosition(), 1080, 600); 
+    
+        // Atualiza a posição da câmera principal
+        cameraController.update(player.getPosition());
+    
+        // Atualiza o mapa de colisão do jogador
         player.updateColisionMap();
-    }
+    }    
 
     private void handleInput(float deltaTime) 
     {
@@ -80,6 +89,18 @@ public class PlayingState implements GameState
         {
             player.attack();
         }
+
+        // Coletar item próximo (nao ta funcionando ainda rsrsrs)
+        if (Gdx.input.isKeyJustPressed(Input.Keys.C)) 
+        {
+            inventory.collectItemNearPlayer(player.getPosition().x, player.getPosition().y, 50);
+        }
+
+        // Abrir/fechar o inventário
+        if (Gdx.input.isKeyJustPressed(Input.Keys.I)) 
+        {
+            inventory.toggleInventory();
+        }
     }
 
     @Override
@@ -87,16 +108,32 @@ public class PlayingState implements GameState
     {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        
+    
         map.renderMapOnScreen();
 
         batch.setProjectionMatrix(cameraController.getMainCamera().combined);
         batch.begin();
+    
         player.render(batch);
+        inventory.renderMapItems(batch);
+    
         batch.end();
-
+    
+        batch.setProjectionMatrix(cameraController.getUICamera().combined);
+        batch.begin();
+    
+        inventory.renderUI(batch);
+        batch.end();
+    
+        if (inventory.isInventoryOpen()) 
+        {
+            batch.begin();
+            inventory.renderInventory(batch);
+            batch.end();
+        }
+    
         renderMiniMap(batch);
-    }
+    }    
 
     private void renderMiniMap(SpriteBatch batch) 
     {
@@ -110,16 +147,26 @@ public class PlayingState implements GameState
     
         batch.setProjectionMatrix(cameraController.getMiniMapCamera().combined);
         batch.begin();
+
+        // Aqui tambem tudo o que for renderizado precisa ser de novo (sim nao sei pq, aaaaa)
+        // tipo os inimigos, mapa, etc
+        map.renderMapOnScreen();
+
         player.render(batch);
+        inventory.renderMapItems(batch);
+
         batch.end();
     
+        // Restaurar a viewport original
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    
+        // Renderizar a borda do mini mapa
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(1, 1, 1, 1); 
+        shapeRenderer.setColor(1, 1, 1, 1);
         shapeRenderer.rect(x, y, width, height);
         shapeRenderer.end();
     }
-
+    
     @Override
     public void enter() 
     {

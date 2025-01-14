@@ -16,12 +16,14 @@ public class AssetsManager
     private final AssetManager assetManager;
     private final HashMap<String, BitmapFont> fonts;
     private final HashMap<String, Animation<TextureRegion>> animations;
+    private final HashMap<String, Texture> textures;
 
     private AssetsManager() 
     {
         assetManager = new AssetManager();
         fonts = new HashMap<>();
         animations = new HashMap<>();
+        textures = new HashMap<>();
     }
 
     public static synchronized AssetsManager getInstance() 
@@ -36,16 +38,16 @@ public class AssetsManager
     public void loadAssets() 
     {
         // Carregamento das fontes
-        loadFont("titleFont", "../assets/fonts/romantic.ttf", 120, com.badlogic.gdx.graphics.Color.WHITE);
-        loadFont("buttonFont", "../assets/fonts/pixelifySans.ttf", 56, com.badlogic.gdx.graphics.Color.WHITE);
-        loadFont("buttonFontHover", "../assets/fonts/pixelifySans.ttf", 60, new com.badlogic.gdx.graphics.Color(0.8549f, 1.0f, 0.6039f, 1.0f));
+        loadFont("titleFont", "assets/fonts/romantic.ttf", 120, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("buttonFont", "assets/fonts/pixelifySans.ttf", 56, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("buttonFontHover", "assets/fonts/pixelifySans.ttf", 60, new com.badlogic.gdx.graphics.Color(0.8549f, 1.0f, 0.6039f, 1.0f));
         
-        loadFont("storyFont", "../assets/fonts/pixelifySans.ttf", 21, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("storyFont", "assets/fonts/pixelifySans.ttf", 21, com.badlogic.gdx.graphics.Color.WHITE);
         
-        loadFont("finalMenu", "../assets/fonts/romantic.ttf", 45, com.badlogic.gdx.graphics.Color.WHITE);
-        loadFont("finalButton", "../assets/fonts/pixelifySans.ttf", 46, com.badlogic.gdx.graphics.Color.WHITE);
-        loadFont("finalButtonHover", "../assets/fonts/pixelifySans.ttf", 48, com.badlogic.gdx.graphics.Color.WHITE);
-        loadFont("subtitleFont", "../assets/fonts/romantic.ttf", 48, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("finalMenu", "assets/fonts/romantic.ttf", 45, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("finalButton", "assets/fonts/pixelifySans.ttf", 46, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("finalButtonHover", "assets/fonts/pixelifySans.ttf", 48, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("subtitleFont", "assets/fonts/romantic.ttf", 48, com.badlogic.gdx.graphics.Color.WHITE);
 
         // Carregamento das animações do jogador (talvez eu adicione mais depois, ou nao, kkkkk talvez nem use todas essas)
         loadAnimationFromImages("idle", generatePaths("assets/playerWalk/idle_", 1, 12), 0.1f, Animation.PlayMode.LOOP);
@@ -54,6 +56,11 @@ public class AssetsManager
         loadAnimationFromImages("attackPowered", generatePaths("assets/sp_atk/sp_atk_", 1, 17), 0.1f, Animation.PlayMode.LOOP);
         loadAnimationFromImages("takeHit", generatePaths("assets/take_hit/take_hit_", 1, 6), 0.1f, Animation.PlayMode.LOOP);
         loadAnimationFromImages("death", generatePaths("assets/losingAnimation/death_", 1, 19), 0.1f, Animation.PlayMode.LOOP);
+
+        loadTexture("healthPotion", "assets/itens/healthPotion.png");
+        loadTexture("bomb", "assets/itens/potion.png");
+        loadTexture("sword", "assets/itens/sword.png");
+
     }
 
     private void loadFont(String fontKey, String fontPath, int size, com.badlogic.gdx.graphics.Color color) 
@@ -107,6 +114,22 @@ public class AssetsManager
         return paths;
     }
 
+    public void loadTexture(String textureKey, String texturePath) 
+    {
+        if (!assetManager.isLoaded(texturePath, Texture.class)) 
+        {
+            assetManager.load(texturePath, Texture.class);
+            assetManager.finishLoading();
+        }
+        Texture texture = assetManager.get(texturePath, Texture.class);
+        textures.put(textureKey, texture);
+    }
+
+    public Texture getTexture(String textureKey)
+    {
+        return textures.get(textureKey);
+    }
+
     public void finishLoading() 
     {
         assetManager.finishLoading();
@@ -131,6 +154,11 @@ public class AssetsManager
         }
         fonts.clear();
 
+        for (Texture texture : textures.values()) 
+        {
+            texture.dispose();
+        }
+        textures.clear();
         animations.clear();
     }
 }

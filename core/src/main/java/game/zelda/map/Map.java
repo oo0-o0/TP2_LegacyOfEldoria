@@ -9,15 +9,15 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
-public class Map {
-
+public class Map 
+{
 	private TiledMap map;
 	private OrthogonalTiledMapRenderer mapRenderer;
 	private OrthographicCamera camera;
 	
-	
-	public Map() {
-		map = new TmxMapLoader().load("../assets/MapAssets/LegacyOfEldoriaMap.tmx");
+	public Map() 
+	{
+		map = new TmxMapLoader().load("assets/MapAssets/LegacyOfEldoriaMap.tmx");
 		mapRenderer = new OrthogonalTiledMapRenderer(map, 1.6f);
 		 
 		camera = new OrthographicCamera();
@@ -26,14 +26,14 @@ public class Map {
 	    camera.update();     
 	}
 	
-	public void renderMapOnScreen(){
-		mapRenderer.render();
+	public void renderMapOnScreen()
+	{
 		mapRenderer.setView(camera);
+		mapRenderer.render();
 	}
 
-	public MapLayer getLayers() {
+	public MapLayer getLayers() 
+	{
 		return map.getLayers().get(5);
 	}
-	
-	
 }
