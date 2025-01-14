@@ -35,9 +35,9 @@ public class MenuState implements GameState
     @Override
     public void enter() 
     {
-        background = new Texture(Gdx.files.internal("assets/backgroundImages/menuBackground.png"));
+        background = new Texture(Gdx.files.internal("../assets/backgroundImages/menuBackground.png"));
 
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets/sounds/menuSound.mp3"));
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("../assets/sounds/menuSound.mp3"));
         backgroundMusic.setLooping(true); 
         backgroundMusic.setVolume(0.5f); 
         backgroundMusic.play(); 
@@ -56,14 +56,14 @@ public class MenuState implements GameState
 
         String[] sparkFrames = 
         {
-            "assets/FallingStar_Sprites/sparkle1.png",
-            "assets/FallingStar_Sprites/sparkle2.png",
-            "assets/FallingStar_Sprites/sparkle3.png",
-            "assets/FallingStar_Sprites/sparkle4.png",
-            "assets/FallingStar_Sprites/sparkle5.png",
-            "assets/FallingStar_Sprites/sparkle6.png",
-            "assets/FallingStar_Sprites/sparkle7.png",
-            "assets/FallingStar_Sprites/sparkle8.png"
+            "../assets/FallingStar_Sprites/sparkle1.png",
+            "../assets/FallingStar_Sprites/sparkle2.png",
+            "../assets/FallingStar_Sprites/sparkle3.png",
+            "../assets/FallingStar_Sprites/sparkle4.png",
+            "../assets/FallingStar_Sprites/sparkle5.png",
+            "../assets/FallingStar_Sprites/sparkle6.png",
+            "../assets/FallingStar_Sprites/sparkle7.png",
+            "../assets/FallingStar_Sprites/sparkle8.png"
         };
 
         AssetsManager.getInstance().loadAnimationFromImages("cursorAnimation", sparkFrames, 0.1f, Animation.PlayMode.LOOP);

@@ -36,16 +36,16 @@ public class AssetsManager
     public void loadAssets() 
     {
         // Carregamento das fontes
-        loadFont("titleFont", "assets/fonts/romantic.ttf", 120, com.badlogic.gdx.graphics.Color.WHITE);
-        loadFont("buttonFont", "assets/fonts/pixelifySans.ttf", 56, com.badlogic.gdx.graphics.Color.WHITE);
-        loadFont("buttonFontHover", "assets/fonts/pixelifySans.ttf", 60, new com.badlogic.gdx.graphics.Color(0.8549f, 1.0f, 0.6039f, 1.0f));
+        loadFont("titleFont", "../assets/fonts/romantic.ttf", 120, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("buttonFont", "../assets/fonts/pixelifySans.ttf", 56, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("buttonFontHover", "../assets/fonts/pixelifySans.ttf", 60, new com.badlogic.gdx.graphics.Color(0.8549f, 1.0f, 0.6039f, 1.0f));
         
-        loadFont("storyFont", "assets/fonts/pixelifySans.ttf", 21, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("storyFont", "../assets/fonts/pixelifySans.ttf", 21, com.badlogic.gdx.graphics.Color.WHITE);
         
-        loadFont("finalMenu", "assets/fonts/romantic.ttf", 45, com.badlogic.gdx.graphics.Color.WHITE);
-        loadFont("finalButton", "assets/fonts/pixelifySans.ttf", 46, com.badlogic.gdx.graphics.Color.WHITE);
-        loadFont("finalButtonHover", "assets/fonts/pixelifySans.ttf", 48, com.badlogic.gdx.graphics.Color.WHITE);
-        loadFont("subtitleFont", "assets/fonts/romantic.ttf", 48, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("finalMenu", "../assets/fonts/romantic.ttf", 45, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("finalButton", "../assets/fonts/pixelifySans.ttf", 46, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("finalButtonHover", "../assets/fonts/pixelifySans.ttf", 48, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("subtitleFont", "../assets/fonts/romantic.ttf", 48, com.badlogic.gdx.graphics.Color.WHITE);
 
         // Carregamento das animações do jogador (talvez eu adicione mais depois, ou nao, kkkkk talvez nem use todas essas)
         loadAnimationFromImages("idle", generatePaths("assets/playerWalk/idle_", 1, 12), 0.1f, Animation.PlayMode.LOOP);

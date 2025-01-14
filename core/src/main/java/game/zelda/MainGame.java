@@ -23,7 +23,7 @@ public class MainGame extends ApplicationAdapter
         batch = new SpriteBatch();
         gameContext = new GameContext();
 
-        gameContext.setState(new MenuState(gameContext));
+        gameContext.setState(new PlayingState(gameContext));
     }
 
     @Override
