@@ -88,23 +88,29 @@ public class Player
         velocity.set(0, 0); 
     }
 
-   public void update(float deltaTime) {
-        if (isJumping) {
+   public void update(float deltaTime) 
+   {
+        if (isJumping)
+        {
             velocity.y -= 980 * deltaTime;
-            if (position.y <= 0) {
+            if (position.y <= 0) 
+            {
                 position.y = 0;
                 isJumping = false;
 
-                if (animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.DEATH) {
+                if (animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.DEATH) 
+                {
                     animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
                 }
             }
         }        
 
-        if (animationManager.isAnimationFinished()) {
+        if (animationManager.isAnimationFinished()) 
+        {
             if (animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.ATTACK_NORMAL || 
                 animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.JUMP || 
-                animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.TAKE_HIT) {
+                animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.TAKE_HIT) 
+            {
                 animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
             }
         }

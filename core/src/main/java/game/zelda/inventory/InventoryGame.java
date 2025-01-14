@@ -21,7 +21,7 @@ public class InventoryGame
 
     public InventoryGame() 
     {
-        inventoryBackground = new Texture("assets/backUI.png"); // Fundo do ícone
+        inventoryBackground = new Texture("assets/backUI.png");
         inventoryIcon = new Texture("assets/inventoryIcon.png");
         emptySlot = new Texture("assets/slot.png");
         itemTexture1 = new Texture("assets/itens/potion.png");
@@ -53,11 +53,9 @@ public class InventoryGame
         float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
         float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
 
-        // Posição da área dos slots (logo acima do ícone)
-        float slotAreaX = (screenWidth - 180) / 2f; // Centralizado horizontalmente
-        float slotAreaY = 170; // Acima do ícone
+        float slotAreaX = (screenWidth - 180) / 2f; 
+        float slotAreaY = 170; 
 
-        // Renderiza os slots e itens
         for (int i = 0; i < inventorySize; i++) 
         {
             float x = slotAreaX + (i % 4) * 45; 
@@ -79,17 +77,12 @@ public class InventoryGame
         float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
         float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
 
-        // Calcula as posições do ícone e do fundo
         float inventoryIconX = (screenWidth - 64) / 2f; 
         float inventoryIconY = 20; 
 
-        // Renderiza o ícone do inventário
         batch.draw(inventoryIcon, inventoryIconX, inventoryIconY, 42, 42);
-
-        // Renderiza o fundo do ícone sobre o ícone
         batch.draw(inventoryBackground, inventoryIconX - 169, inventoryIconY - 60, 380, 214);
 
-        // Renderiza o texto "Inventário"
         String text = "Inventário";
         glyphLayout.setText(font, text);
         float textX = inventoryIconX + (50 - glyphLayout.width) / 2f;

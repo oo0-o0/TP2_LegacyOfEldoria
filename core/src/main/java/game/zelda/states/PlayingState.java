@@ -22,7 +22,7 @@ public class PlayingState implements GameState
     private GameContext gameContext;
     private MoveCommand moveCommand;
     private AttackCommand attackCommand;
-    private CameraController cameraController;
+    //private CameraController cameraController;
     private ShapeRenderer shapeRenderer;
     private InventoryGame inventory;
     private Map map;
@@ -31,7 +31,7 @@ public class PlayingState implements GameState
     {
         float viewportWidth = Gdx.graphics.getWidth();
         float viewportHeight = Gdx.graphics.getHeight();
-        this.cameraController = new CameraController(viewportWidth, viewportHeight);
+        //this.cameraController = new CameraController(viewportWidth, viewportHeight);
         this.shapeRenderer = new ShapeRenderer();
 
         this.gameContext = gameContext;
@@ -49,7 +49,7 @@ public class PlayingState implements GameState
         handleInput(deltaTime);
         player.update(deltaTime);
     
-        cameraController.update(player.getPosition());
+        //cameraController.update(player.getPosition());
     
         player.updateColisionMap();
     }    
@@ -107,7 +107,7 @@ public class PlayingState implements GameState
     
         map.renderMapOnScreen();
 
-        batch.setProjectionMatrix(cameraController.getMainCamera().combined);
+        //batch.setProjectionMatrix(cameraController.getMainCamera().combined);
         batch.begin();
     
         player.render(batch);
@@ -115,7 +115,7 @@ public class PlayingState implements GameState
     
         batch.end();
     
-        batch.setProjectionMatrix(cameraController.getUICamera().combined);
+        //batch.setProjectionMatrix(cameraController.getUICamera().combined);
         batch.begin();
     
         inventory.renderUI(batch);
@@ -128,7 +128,7 @@ public class PlayingState implements GameState
             batch.end();
         }
     
-        renderMiniMap(batch);
+        //renderMiniMap(batch);
     }    
 
     private void renderMiniMap(SpriteBatch batch) 
@@ -141,7 +141,7 @@ public class PlayingState implements GameState
         batch.flush();
         Gdx.gl.glViewport(x, y, width, height);
     
-        batch.setProjectionMatrix(cameraController.getMiniMapCamera().combined);
+       // batch.setProjectionMatrix(cameraController.getMiniMapCamera().combined);
         batch.begin();
 
         // Aqui tambem tudo o que for renderizado precisa ser de novo (sim nao sei pq, aaaaa)
