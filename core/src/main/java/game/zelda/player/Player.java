@@ -1,6 +1,7 @@
 package game.zelda.player;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 
 import game.zelda.AssetsManager;
@@ -12,14 +13,16 @@ public class Player
     private boolean isJumping;
     private boolean isRunning;
     private PlayerAnimationManager animationManager;
+    private TiledMapTileLayer collisionLayer;
     
-    public Player(float startX, float startY) 
+    public Player(float startX, float startY, TiledMapTileLayer collisionLayer) 
     {
         this.position = new Vector2(startX, startY);
         this.velocity = new Vector2(0, 0);
         this.animationManager = new PlayerAnimationManager();
         this.isJumping = false;
         this.isRunning = false;
+        this.collisionLayer = collisionLayer;
 
         AssetsManager assetsManager = AssetsManager.getInstance();
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.IDLE, assetsManager.getAnimation("idle"));
@@ -90,6 +93,127 @@ public class Player
         }
         position.add(velocity.x * deltaTime, velocity.y * deltaTime);
         animationManager.update(deltaTime);
+        
+    }
+    
+    public void updateColisionMap() 
+    {
+        float lastX = position.x, lastY = position.y, 
+        		tileWidth = collisionLayer.getTileWidth(),
+        		tileHeight = collisionLayer.getTileHeight();
+        boolean collidedX = false, collidedY = false;
+        
+        //teste de colisão para esquerda
+        if(velocity.x < 0) {
+        	//diagonal superior esquerda
+        	collidedX = collisionLayer.getCell((int)(lastX / tileWidth),
+        			(int)((lastY + 30) / tileHeight)).getTile().
+        			getProperties().containsKey("blocked") ;
+        	System.out.println("Colidiu");
+        	
+        	//esquerda
+        	if(!collidedX) {
+	        	collidedX = collisionLayer.getCell((int)(lastX / tileWidth),
+	        			(int)(((lastY + 30) / 2) / tileHeight)).getTile().
+	        			getProperties().containsKey("blocked") ;
+	        	System.out.println("Colidiu");
+        	}
+        	
+        	//diagonal inferior esquerda
+        	if(!collidedX) {
+	        	collidedX = collisionLayer.getCell((int)(lastX / tileWidth),
+	        			(int)(lastY  / tileHeight)).getTile().
+	        			getProperties().containsKey("blocked") ;
+	        	System.out.println("Colidiu");
+        	}
+        }
+        
+        //teste de colisão para direita
+        else if(velocity.x > 0) {
+        	//diagonal superior direita
+        	collidedX = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),
+        			(int)((lastY + 30) / tileHeight)).getTile().
+        			getProperties().containsKey("blocked") ;
+        	System.out.println("Colidiu");
+        	
+        	//direita
+        	if(!collidedX) {
+	        	collidedX = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),
+	        			(int)(((lastY + 30) / 2) / tileHeight)).getTile().
+	        			getProperties().containsKey("blocked") ;
+	        	System.out.println("Colidiu");
+        	}
+        	
+        	//diagonal inferior direita
+        	if(!collidedX) {
+	        	collidedX = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),
+	        			(int)(lastY  / tileHeight)).getTile().
+	        			getProperties().containsKey("blocked") ;
+	        	System.out.println("Colidiu");
+        	}
+        }
+        
+        //reação a colisão
+        if(collidedX) {
+        	position.x = lastX;
+        	velocity.x = 0;
+        }
+        
+        //teste de colisão para baixo
+        if(velocity.y < 0) {
+        	//diagonal superior de baixo
+        	collidedY = collisionLayer.getCell((int)(lastX / tileWidth),
+        			(int)(lastY / tileHeight)).getTile().
+        			getProperties().containsKey("blocked") ;
+        	System.out.println("Colidiu");
+        	
+        	//baixo
+        	if(!collidedY) {
+	        	collidedY = collisionLayer.getCell((int)(((lastX + 35) / 2) / tileWidth),
+	        			(int)(lastY / tileHeight)).getTile().
+	        			getProperties().containsKey("blocked") ;
+	        	System.out.println("Colidiu");
+        	}
+        	
+        	//diagonal inferior de baixo
+        	if(!collidedY) {
+	        	collidedY = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),
+	        			(int)(lastY / tileHeight)).getTile().
+	        			getProperties().containsKey("blocked") ;
+	        	System.out.println("Colidiu");
+        	}
+        }
+        
+        //teste de colisão para cima
+        else if(velocity.y > 0) {
+        	//diagonal superior de cima
+        	collidedY = collisionLayer.getCell((int)(lastX / tileWidth),
+        			(int)(lastY / tileHeight)).getTile().
+        			getProperties().containsKey("blocked") ;
+        	System.out.println("Colidiu");
+        	
+        	//cima
+        	if(!collidedY) {
+	        	collidedY = collisionLayer.getCell((int)(((lastX + 35) / 2) / tileWidth),
+	        			(int)((lastY + 30) / tileWidth)).getTile().
+	        			getProperties().containsKey("blocked") ;
+	        	System.out.println("Colidiu");
+        	}
+        	
+        	//diagonal inferior de cima
+        	if(!collidedY) {
+	        	collidedY = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),
+	        			(int)((lastY + 30) / tileHeight)).getTile().
+	        			getProperties().containsKey("blocked") ;
+	        	System.out.println("Colidiu");
+        	}
+        } 
+        
+      //reação a colisão
+        if(collidedY) {
+        	position.y = lastY;
+        	velocity.y = 0;
+        }
     }
 
     public void setRunning(boolean isRunning) 

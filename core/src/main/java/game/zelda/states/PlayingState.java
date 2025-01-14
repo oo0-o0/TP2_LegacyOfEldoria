@@ -4,11 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
 import game.zelda.GameContext;
 import game.zelda.player.commands.AttackCommand;
 import game.zelda.player.commands.MoveCommand;
 import game.zelda.player.Player;
+import game.zelda.map.Map;
 
 public class PlayingState implements GameState 
 {
@@ -16,13 +18,16 @@ public class PlayingState implements GameState
     private GameContext gameContext;
     private MoveCommand moveCommand;
     private AttackCommand attackCommand;
+    private Map map;
 
     public PlayingState(GameContext gameContext)
     {
         this.gameContext = gameContext;
-        this.player = new Player(100, 100);
+        this.map = new Map();
+        this.player = new Player(100, 100, (TiledMapTileLayer) map.getLayers());
         this.moveCommand = new MoveCommand(player, 250f); 
         this.attackCommand = new AttackCommand(player);
+        
     }
 
     @Override
@@ -32,6 +37,7 @@ public class PlayingState implements GameState
         moveCommand.setDeltaTime(deltaTime);
         moveCommand.execute();
         player.update(deltaTime);
+        player.updateColisionMap();
     }
 
     private void handleInput(float deltaTime) 
@@ -84,6 +90,8 @@ public class PlayingState implements GameState
     {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        
+        map.renderMapOnScreen();
 
         batch.begin();
         batch.setColor(1, 1, 1, 1);
