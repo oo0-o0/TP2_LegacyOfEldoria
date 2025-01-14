@@ -28,10 +28,6 @@ public class PlayingState implements GameState
     public PlayingState(GameContext gameContext)
     {
         this.gameContext = gameContext;
-        this.player = new Player(100, 100);
-        this.moveCommand = new MoveCommand(player, 250f);
-        this.attackCommand = new AttackCommand(player);
-
         float viewportWidth = Gdx.graphics.getWidth();
         float viewportHeight = Gdx.graphics.getHeight();
         this.cameraController = new CameraController(viewportWidth, viewportHeight);

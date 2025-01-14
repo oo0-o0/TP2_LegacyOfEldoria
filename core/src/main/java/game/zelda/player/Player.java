@@ -12,7 +12,7 @@ public class Player
     private Vector2 velocity;
     private boolean isJumping;
     private boolean isRunning;
-    private PlayerAnimationManager animationManager;
+    public PlayerAnimationManager animationManager;
     private TiledMapTileLayer collisionLayer;
     
     public Player(float startX, float startY, TiledMapTileLayer collisionLayer) 
