@@ -183,5 +183,15 @@ public class InventoryGame implements Subject
                 System.err.println("Erro ao notificar observador: " + observer + ", " + e.getMessage());
             }
         }
-    }    
+    }   
+
+    public Array<Item> getInventoryItems() 
+    {
+        return inventoryItems;
+    }
+
+    public int getInventorySize() 
+    {
+        return inventorySize;
+    }
 }

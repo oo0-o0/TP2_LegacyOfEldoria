@@ -15,13 +15,16 @@ import game.zelda.observer.Observer;
 
 public class Player implements Observer
 {
+    private TiledMapTileLayer collisionLayer;
     private Sound itemCollectSound;
+    private InventoryGame inventory;
     private Vector2 position;
     private Vector2 velocity;
     private boolean isJumping;
     public PlayerAnimationManager animationManager;
-    private TiledMapTileLayer collisionLayer;
-    private InventoryGame inventory;
+    public int maxHealth = 100; 
+    public int currentHealth = 100; 
+    public int damage = 10; 
     
     public Player(float startX, float startY, TiledMapTileLayer collisionLayer, InventoryGame inventory)  
     {
@@ -91,13 +94,6 @@ public class Player implements Observer
     public void takeHit() 
     {
         animationManager.setState(PlayerAnimationManager.PlayerState.TAKE_HIT);
-        // Lógica para redução de vida ?
-    }
-
-    public void die() 
-    {
-        animationManager.setState(PlayerAnimationManager.PlayerState.DEATH);
-        velocity.set(0, 0); 
     }
 
     public void collectItem() 
@@ -125,6 +121,7 @@ public class Player implements Observer
    public void update(float deltaTime) 
    {
         collectItem();
+        
         if (isJumping)
         {
             velocity.y -= 980 * deltaTime;
@@ -150,9 +147,6 @@ public class Player implements Observer
             }
         }
 
-        // Atualize a posição
-        position.add(velocity.x * deltaTime, velocity.y * deltaTime);
-
         // Restringe a posição dentro dos limites do mapa
         float mapWidth = collisionLayer.getWidth() * collisionLayer.getTileWidth();
         float mapHeight = collisionLayer.getHeight() * collisionLayer.getTileHeight();
@@ -162,7 +156,6 @@ public class Player implements Observer
 
         animationManager.update(deltaTime);
     }
-
 
     public void updateColisionMap() 
     {
@@ -280,5 +273,10 @@ public class Player implements Observer
     public void dispose() 
     {
         itemCollectSound.dispose();
+    }
+
+    public Sound getitemCollectSound()
+    {
+        return itemCollectSound;
     }
 }

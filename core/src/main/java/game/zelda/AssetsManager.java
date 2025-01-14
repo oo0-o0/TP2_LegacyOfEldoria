@@ -50,6 +50,7 @@ public class AssetsManager
         loadFont("subtitleFont", "assets/fonts/romantic.ttf", 48, com.badlogic.gdx.graphics.Color.WHITE);
 
         loadFont("inventoryFont", "assets/fonts/romantic.ttf", 48, com.badlogic.gdx.graphics.Color.WHITE);
+        loadFont("healthBarFont", "assets/fonts/pixelifySans.ttf", 26, com.badlogic.gdx.graphics.Color.WHITE);
 
         // Carregamento das animações do jogador (talvez eu adicione mais depois, ou nao, kkkkk talvez nem use todas essas)
         loadAnimationFromImages("idle", generatePaths("assets/playerWalk/idle_", 1, 12), 0.1f, Animation.PlayMode.LOOP);

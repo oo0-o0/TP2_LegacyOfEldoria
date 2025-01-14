@@ -3,10 +3,13 @@ package game.zelda.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
+import game.zelda.AssetsManager;
 import game.zelda.GameContext;
 import game.zelda.camera.CameraController;
 import game.zelda.inventory.InventoryGame;
@@ -18,6 +21,7 @@ import game.zelda.player.PlayerAnimationManager;
 public class PlayingState implements GameState 
 {
     private Player player;
+    private BitmapFont font;
     private GameContext gameContext;
     private MoveCommand moveCommand;
     //private CameraController cameraController;
@@ -38,12 +42,12 @@ public class PlayingState implements GameState
         //this.cameraController = new CameraController(viewportWidth, viewportHeight);
         this.shapeRenderer = new ShapeRenderer();
 
-        this.gameContext = gameContext;
         this.map = new Map();
         this.inventory = new InventoryGame();
 
         this.player = new Player(100, 100, (TiledMapTileLayer) map.getLayers(), inventory);
         this.moveCommand = new MoveCommand(player, 250f);
+        font = AssetsManager.getInstance().getFont("healthBarFont");
     }
 
     @Override
@@ -54,6 +58,25 @@ public class PlayingState implements GameState
     
         //cameraController.update(player.getPosition());
         player.updateColisionMap();
+
+        if (player.currentHealth <= 0) 
+        {
+            player.animationManager.setState(PlayerAnimationManager.PlayerState.DEATH);
+
+            if (player.animationManager.isAnimationFinished()) 
+            {
+                gameContext.setState(new GameOverState(gameContext));
+            }
+            return; 
+        }
+
+        if (inventory.getInventoryItems().size == inventory.getInventorySize()) 
+        {
+            //Som/animacao de vitoria sla a ser adiicionado
+
+            gameContext.setState(new WinningState(gameContext));
+            return; 
+        }
     }    
 
     private void handleInput(float deltaTime) 
@@ -107,8 +130,13 @@ public class PlayingState implements GameState
         batch.begin();
     
         player.render(batch);
+
+        Texture healthBarBackground = new Texture("assets/ui/lifeUI.png");
+        batch.draw(healthBarBackground, -70, Gdx.graphics.getHeight() - 120, 320, 180);
+        font.draw(batch, + player.currentHealth + "/" + player.maxHealth, 60, Gdx.graphics.getHeight() - 20);
+
         inventory.renderMapItems(batch);
-    
+
         batch.end();
     
         //batch.setProjectionMatrix(cameraController.getUICamera().combined);
