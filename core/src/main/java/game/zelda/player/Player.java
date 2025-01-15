@@ -5,9 +5,16 @@ import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 
 import game.zelda.AssetsManager;
 import game.zelda.entity.Enemy;
@@ -77,7 +84,7 @@ public class Player implements Observer
         position.add(dx, dy);
         if (!isJumping) 
         {
-            animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
+            animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);           
         }
     }
 
@@ -310,7 +317,7 @@ public class Player implements Observer
         }
         return false;
     }
-
+      
     public void render(Batch batch) 
     {
         batch.draw(animationManager.getCurrentFrame(), position.x, position.y);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="36" height="23" tilewidth="32" tileheight="32" infinite="0" nextlayerid="47" nextobjectid="46">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="36" height="23" tilewidth="32" tileheight="32" infinite="0" nextlayerid="48" nextobjectid="46">
  <tileset firstgid="1" source="Terrain - Ancient Ruins.tsx"/>
  <tileset firstgid="2092" source="Ancient Ruins-Tileset-wall-8.tsx"/>
  <tileset firstgid="2162" source="Tileset-Animated Terrains-8 frames--.tsx"/>
@@ -190,11 +190,6 @@
     <property name="blocked" value=""/>
    </properties>
   </tile>
-  <tile id="122">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
   <tile id="123">
    <properties>
     <property name="blocked" value=""/>
@@ -221,11 +216,6 @@
    </properties>
   </tile>
   <tile id="134">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
-  <tile id="135">
    <properties>
     <property name="blocked" value=""/>
    </properties>
@@ -275,26 +265,6 @@
     <property name="blocked" value=""/>
    </properties>
   </tile>
-  <tile id="147">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
-  <tile id="148">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
-  <tile id="149">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
-  <tile id="150">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
   <tile id="155">
    <properties>
     <property name="blocked" value=""/>
@@ -320,11 +290,6 @@
     <property name="blocked" value=""/>
    </properties>
   </tile>
-  <tile id="162">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
   <tile id="163">
    <properties>
     <property name="blocked" value=""/>
@@ -336,11 +301,6 @@
    </properties>
   </tile>
   <tile id="165">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
-  <tile id="166">
    <properties>
     <property name="blocked" value=""/>
    </properties>
@@ -370,11 +330,6 @@
     <property name="blocked" value=""/>
    </properties>
   </tile>
-  <tile id="178">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
   <tile id="179">
    <properties>
     <property name="blocked" value=""/>
@@ -386,11 +341,6 @@
    </properties>
   </tile>
   <tile id="181">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
-  <tile id="182">
    <properties>
     <property name="blocked" value=""/>
    </properties>
@@ -421,26 +371,6 @@
    </properties>
   </tile>
   <tile id="194">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
-  <tile id="195">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
-  <tile id="196">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
-  <tile id="197">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
-  <tile id="198">
    <properties>
     <property name="blocked" value=""/>
    </properties>
@@ -746,7 +676,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="46" name="colision">
+ <objectgroup id="46" name="colision" visible="0">
   <object id="3" x="341.333" y="0.67">
    <properties>
     <property name="blocked" type="bool" value="true"/>
