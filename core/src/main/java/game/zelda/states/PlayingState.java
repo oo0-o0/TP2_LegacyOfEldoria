@@ -19,6 +19,7 @@ import game.zelda.entity.Enemy;
 import game.zelda.entity.EnemyFactory;
 import game.zelda.inventory.InventoryGame;
 import game.zelda.map.Map;
+import game.zelda.player.commands.AttackCommand;
 import game.zelda.player.commands.MoveCommand;
 import game.zelda.player.Player;
 import game.zelda.player.PlayerAnimationManager;
@@ -30,6 +31,7 @@ public class PlayingState implements GameState
     private BitmapFont font;
     private GameContext gameContext;
     private MoveCommand moveCommand;
+    private AttackCommand attackCommand;
     private ShapeRenderer shapeRenderer;
     private InventoryGame inventory;
     private Map map;
@@ -45,16 +47,25 @@ public class PlayingState implements GameState
         this.shapeRenderer = new ShapeRenderer();
         this.map = new Map();
         this.inventory = new InventoryGame();
-
-        this.player = new Player(100, 100, (TiledMapTileLayer) map.getLayers(), inventory);
         this.moveCommand = new MoveCommand(player, 250f);
-
         this.enemies = new ArrayList<>();
         enemies.add(EnemyFactory.enemyCreation(1)); // Adiciona um Bat
         enemies.add(EnemyFactory.enemyCreation(2)); // Adiciona um CrystalElemental
         enemies.add(EnemyFactory.enemyCreation(3)); // Adiciona um MetalElemental
-
         font = AssetsManager.getInstance().getFont("healthBarFont");
+        float viewportWidth = Gdx.graphics.getWidth();
+        float viewportHeight = Gdx.graphics.getHeight();
+        this.shapeRenderer = new ShapeRenderer(); 
+        this.map = new Map();
+        
+        List<TiledMapTileLayer> collisionLayers = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            collisionLayers.add((TiledMapTileLayer) map.getLayers().get(i));
+        }
+        
+        this.player = new Player(100, 100, collisionLayers, inventory); 
+        this.attackCommand = new AttackCommand(player);
+        
     }
 
     @Override
@@ -135,7 +146,7 @@ public class PlayingState implements GameState
     @Override
     public void render(SpriteBatch batch) 
     {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(0.5137f, 0.6431f, 0.2863f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     
         map.renderMapOnScreen();
