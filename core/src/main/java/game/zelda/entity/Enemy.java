@@ -1,5 +1,8 @@
 package game.zelda.entity;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import game.zelda.player.Player;
@@ -9,14 +12,17 @@ public abstract class Enemy
     protected int healthPoints;
     protected int damagePoints;
     protected Vector2 position;
-    protected String imgPath;
+    private Animation<TextureRegion> animation;
+    private float stateTime;
 
-    public Enemy(int healthPoints, int damagePoints, Vector2 position, String imgPath) 
+    public Enemy(int healthPoints, int damagePoints, Vector2 position, Animation<TextureRegion> animation) 
 	{
         this.healthPoints = healthPoints;
         this.damagePoints = damagePoints;
         this.position = position;
-        this.imgPath = imgPath;
+
+        this.animation = animation;
+        this.stateTime = 0;
     }
 
     public void attackPlayer(Player player, float deltaTime) 
@@ -27,7 +33,6 @@ public abstract class Enemy
             System.out.println("Inimigo atacou! Vida do jogador: " + player.currentHealth);
         }
     }
-
 
     public int getHealthPoints() 
 	{
@@ -44,8 +49,14 @@ public abstract class Enemy
         return position;
     }
 
-    public String getImgPath() 
-	{
-        return imgPath;
+    public void updateAnimation(float deltaTime) 
+    {
+        stateTime += deltaTime;
+    }
+
+    public void render(SpriteBatch batch) 
+    {
+        TextureRegion currentFrame = animation.getKeyFrame(stateTime);
+        batch.draw(currentFrame, position.x, position.y);
     }
 }

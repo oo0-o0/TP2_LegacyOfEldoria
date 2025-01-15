@@ -65,11 +65,10 @@ public class PlayingState implements GameState
     
         player.updateColisionMap();
 
-        for (Enemy enemy : enemies) 
-        {
+        for (Enemy enemy : enemies) {
             enemy.attackPlayer(player, deltaTime);
-    
             moveEnemyTowardsPlayer(enemy, deltaTime);
+            enemy.updateAnimation(deltaTime);
         }
 
         // Morte
@@ -82,7 +81,6 @@ public class PlayingState implements GameState
         // Vitória
         if (inventory.getInventoryItems().size == inventory.getInventorySize()) 
         {
-            //Som/animacao de vitoria sla a ser adiicionado
             gameContext.setState(new WinningState(gameContext));
             return; 
         }
@@ -127,11 +125,11 @@ public class PlayingState implements GameState
         }
     }
 
-    // Método para mover inimigo em direção ao jogador
     private void moveEnemyTowardsPlayer(Enemy enemy, float deltaTime) 
     {
         Vector2 direction = player.getPosition().cpy().sub(enemy.getPosition()).nor();
-        enemy.getPosition().add(direction.scl(50 * deltaTime)); 
+        float speed = 20; 
+        enemy.getPosition().add(direction.scl(speed * deltaTime));
     }
 
     @Override
@@ -142,27 +140,25 @@ public class PlayingState implements GameState
     
         map.renderMapOnScreen();
 
-        //batch.setProjectionMatrix(cameraController.getMainCamera().combined);
         batch.begin();
-    
-        player.render(batch);
 
+        player.render(batch);
         for (Enemy enemy : enemies) 
         {
-            batch.draw(new Texture(enemy.getImgPath()), enemy.getPosition().x, enemy.getPosition().y);
+            enemy.render(batch);
         }
 
         Texture healthBarBackground = new Texture("assets/ui/lifeUI.png");
         batch.draw(healthBarBackground, -70, Gdx.graphics.getHeight() - 120, 320, 180);
         font.draw(batch, + player.currentHealth + "/" + player.maxHealth, 60, Gdx.graphics.getHeight() - 20);
-
         inventory.renderMapItems(batch);
+
         batch.end();
     
         batch.begin();
         inventory.renderUI(batch);
         batch.end();
-    
+
         if (inventory.isInventoryOpen()) 
         {
             batch.begin();
@@ -170,7 +166,6 @@ public class PlayingState implements GameState
             batch.end();
         }
     }    
-
     
     @Override
     public void exit() 

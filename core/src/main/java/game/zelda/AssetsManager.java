@@ -52,13 +52,17 @@ public class AssetsManager
         loadFont("inventoryFont", "assets/fonts/romantic.ttf", 48, com.badlogic.gdx.graphics.Color.WHITE);
         loadFont("healthBarFont", "assets/fonts/pixelifySans.ttf", 26, com.badlogic.gdx.graphics.Color.WHITE);
 
-        // Carregamento das animações do jogador (talvez eu adicione mais depois, ou nao, kkkkk talvez nem use todas essas)
+        // Carregamento das animações do jogador 
         loadAnimationFromImages("idle", generatePaths("assets/playerWalk/idle_", 1, 12), 0.1f, Animation.PlayMode.LOOP);
         loadAnimationFromImages("jump", generatePaths("assets/jump/jump_", 1, 22), 0.1f, Animation.PlayMode.LOOP);
         loadAnimationFromImages("attackNormal", generatePaths("assets/2_atk/2_atk_", 1, 15), 0.1f, Animation.PlayMode.LOOP);
-        loadAnimationFromImages("attackPowered", generatePaths("assets/sp_atk/sp_atk_", 1, 17), 0.1f, Animation.PlayMode.LOOP);
         loadAnimationFromImages("takeHit", generatePaths("assets/take_hit/take_hit_", 1, 6), 0.1f, Animation.PlayMode.LOOP);
         loadAnimationFromImages("death", generatePaths("assets/losingAnimation/death_", 1, 19), 0.1f, Animation.PlayMode.LOOP);
+
+        // Carregamento das animações dos inimigos
+        loadAnimationFromImages("bat", generatePaths("assets/Bat/BatIdleMoving/BatIdleMoving", 1, 3), 0.1f, Animation.PlayMode.LOOP);
+        loadAnimationFromImages("crystalElemental", generatePaths("assets/crystal/idle/idle_", 1, 8), 0.1f, Animation.PlayMode.LOOP);
+        loadAnimationFromImages("metalElemental", generatePaths("assets/metal/01_idle/01_idle_", 1, 8), 0.1f, Animation.PlayMode.LOOP);
     }
 
     private void loadFont(String fontKey, String fontPath, int size, com.badlogic.gdx.graphics.Color color) 

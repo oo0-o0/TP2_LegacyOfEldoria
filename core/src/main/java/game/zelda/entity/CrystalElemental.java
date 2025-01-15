@@ -1,11 +1,13 @@
 package game.zelda.entity;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 public class CrystalElemental extends Enemy 
 {
-    public CrystalElemental() 
+    public CrystalElemental(Vector2 position, Animation<TextureRegion> animation) 
     {
-        super(80, 6, new Vector2(79, 30), "assets/crystal/idle/idle_1.png");
+        super(80, 6, position, animation);
     }
 }

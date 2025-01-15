@@ -11,6 +11,7 @@ public class PlayerAnimationManager
         IDLE,
         JUMP,
         ATTACK_NORMAL,
+        TAKE_HIT,
         DEATH
     }
 

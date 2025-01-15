@@ -40,6 +40,7 @@ public class Player implements Observer
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.IDLE, assetsManager.getAnimation("idle"));
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.JUMP, assetsManager.getAnimation("jump"));
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.ATTACK_NORMAL, assetsManager.getAnimation("attackNormal"));
+        animationManager.loadAnimation(PlayerAnimationManager.PlayerState.TAKE_HIT, assetsManager.getAnimation("takeHit"));
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.DEATH, assetsManager.getAnimation("death"));
 
         itemCollectSound = Gdx.audio.newSound(Gdx.files.internal("assets/sounds/collectSound.mp3"));
@@ -74,6 +75,7 @@ public class Player implements Observer
             return;
     
         if (animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.ATTACK_NORMAL &&
+            animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.TAKE_HIT &&
             animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.JUMP) 
         {
             animationManager.setState(PlayerAnimationManager.PlayerState.ATTACK_NORMAL);
@@ -132,7 +134,8 @@ public class Player implements Observer
         if (animationManager.isAnimationFinished()) 
         {
             if (animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.ATTACK_NORMAL || 
-                animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.JUMP) 
+                animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.JUMP || 
+                animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.TAKE_HIT) 
             {
                 animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
             }
