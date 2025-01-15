@@ -1,21 +1,22 @@
 package game.zelda.player;
 
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import game.zelda.AssetsManager;
+import game.zelda.entity.Enemy;
 import game.zelda.inventory.InventoryGame;
 import game.zelda.inventory.Item;
 import game.zelda.observer.Observer;
 
 public class Player implements Observer
 {
-    private TiledMapTileLayer collisionLayer;
     private Sound itemCollectSound;
     private InventoryGame inventory;
     private Vector2 position;
@@ -24,17 +25,21 @@ public class Player implements Observer
     public PlayerAnimationManager animationManager;
     public int maxHealth = 100; 
     public int currentHealth = 100; 
-    public int damage = 5; 
+    public int damage = 10; 
+    private List<TiledMapTileLayer> collisionLayers;
+    private String blockedKey = "blocked";
+    private Vector2 direction;
     
-    public Player(float startX, float startY, TiledMapTileLayer collisionLayer, InventoryGame inventory)  
+    public Player(float startX, float startY, List<TiledMapTileLayer> collisionLayers, InventoryGame inventory)  
     {
         this.position = new Vector2(startX, startY);
         this.velocity = new Vector2(0, 0);
         this.animationManager = new PlayerAnimationManager();
         this.isJumping = false;
-        this.collisionLayer = collisionLayer;
         this.inventory = inventory;
         inventory.registerObserver(this); 
+        this.collisionLayers = collisionLayers;
+        this.direction = new Vector2(0, 0);
 
         AssetsManager assetsManager = AssetsManager.getInstance();
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.IDLE, assetsManager.getAnimation("idle"));
@@ -46,13 +51,29 @@ public class Player implements Observer
         itemCollectSound = Gdx.audio.newSound(Gdx.files.internal("assets/sounds/collectSound.mp3"));
     }
 
+    public void setPosition(Vector2 position) 
+    {
+		this.position = position;
+	}
+    
     public Vector2 getPosition() 
     {
-        return position;
+    	return position;
+	}
+	
+	public float getPositionX() 
+    {
+        return position.x;
+    }
+	
+	public float getPositionY() 
+    {
+        return position.y;
     }
 
     public void move(float dx, float dy) 
     {
+        direction.set(dx, dy);
         position.add(dx, dy);
         if (!isJumping) 
         {
@@ -62,6 +83,7 @@ public class Player implements Observer
 
     public void stop() 
     {
+        direction.set(0, 0);
         velocity.set(0, 0);
         if (!isJumping) 
         {
@@ -69,19 +91,38 @@ public class Player implements Observer
         }
     }
     
-    public void attack() 
+    public void attack(List<Enemy> enemies) 
     {
+        if (animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.ATTACK_NORMAL) 
+        {
+            return; 
+        }
+
         if (animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.DEATH) 
             return;
-    
-        if (animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.ATTACK_NORMAL &&
-            animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.TAKE_HIT &&
-            animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.JUMP) 
+
+        if (animationManager.getCurrentState() != PlayerAnimationManager.PlayerState.ATTACK_NORMAL) 
         {
             animationManager.setState(PlayerAnimationManager.PlayerState.ATTACK_NORMAL);
+
+            for (Enemy enemy : enemies) 
+            {
+                System.out.println("Distância para inimigo: " + position.dst(enemy.getPosition()));
+                if (isEnemyInRange(enemy)) 
+                {
+                    enemy.takeDamage(damage);
+                    //System.err.println("inimigo sofreu dano" + damage);
+                }
+            }
         }
     }
-    
+
+    private boolean isEnemyInRange(Enemy enemy) 
+    {
+        float attackRange = 150f; 
+        return position.dst(enemy.getPosition()) <= attackRange;
+    }
+
     public void jump() 
     {
         if (animationManager.getCurrentState() == PlayerAnimationManager.PlayerState.DEATH) 
@@ -114,6 +155,8 @@ public class Player implements Observer
 
    public void update(float deltaTime) 
    {
+        float lastX = getPositionX(), lastY = getPositionY();
+        boolean collidedX = false, collidedY = false;
         collectItem();
         
         if (isJumping)
@@ -140,123 +183,132 @@ public class Player implements Observer
                 animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
             }
         }
-
-        // Restringe a posição dentro dos limites do mapa
-        float mapWidth = collisionLayer.getWidth() * collisionLayer.getTileWidth();
-        float mapHeight = collisionLayer.getHeight() * collisionLayer.getTileHeight();
-
-        position.x = MathUtils.clamp(position.x, 0, mapWidth - 35); // Considerando a largura do player
-        position.y = MathUtils.clamp(position.y, 0, mapHeight - 30); // Considerando a altura do player
-
+        position.add(velocity.x * deltaTime, velocity.y * deltaTime);
         animationManager.update(deltaTime);
-    }
 
-    public void updateColisionMap() 
-    {
-        float lastX = position.x, lastY = position.y, tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
-        boolean collidedX = false, collidedY = false;
+        /*	seção de codigo (parte da colisão) fortemente inspirada 
+         * em duas fontes, sendo elas:
+         * 
+         * 1 - https://github.com/MrBenC88/Simple-Tile-Map-ProgramLibGDX/tree/master
+         * 2 - https://www.youtube.com/watch?v=DOpqkaX9844&list=PLXY8okVWvwZ0qmqSBhOtqYRjzWtUCWylb&index=4
+         * 
+         */
         
-        // Teste de colisão para esquerda
-        if(velocity.x < 0) 
+        //colisão para a esquerda
+        if (direction.x  < 0) 
         {
-        	// Diagonal superior esquerda
-        	collidedX = collisionLayer.getCell((int)(lastX / tileWidth), (int)((lastY + 30) / tileHeight)).getTile().getProperties().containsKey("blocked");
-        	System.out.println("Colidiu");
-        	
-        	// Esquerda
-        	if(!collidedX) 
-            {
-	        	collidedX = collisionLayer.getCell((int)(lastX / tileWidth),(int)(((lastY + 30) / 2) / tileHeight)).getTile().getProperties().containsKey("blocked");
-	        	System.out.println("Colidiu");
-        	}
-        	
-        	// Diagonal inferior esquerda
-        	if(!collidedX) 
-            {
-	        	collidedX = collisionLayer.getCell((int)(lastX / tileWidth),(int)(lastY  / tileHeight)).getTile().getProperties().containsKey("blocked");
-	        	System.out.println("Colidiu");
-        	}
+        	collidedX = collidesLeft();
+        } 
+        
+        //colisão para a direita
+        else if (direction.x > 0) 
+        {
+        	collidedX = collidesRight();
         }
         
-        // Teste de colisão para direita
-        else if(velocity.x > 0) 
-        {
-        	// Diagonal superior direita
-        	collidedX = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),(int)((lastY + 30) / tileHeight)).getTile().getProperties().containsKey("blocked");
-        	System.out.println("Colidiu");
-        	
-        	// Direita
-        	if(!collidedX) 
-            {
-	        	collidedX = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),(int)(((lastY + 30) / 2) / tileHeight)).getTile().getProperties().containsKey("blocked");
-	        	System.out.println("Colidiu");
-        	}
-        	
-        	// Diagonal inferior direita
-        	if(!collidedX) 
-            {
-	        	collidedX = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),(int)(lastY  / tileHeight)).getTile().getProperties().containsKey("blocked");
-	        	System.out.println("Colidiu");
-        	}
-        }
-        
-        // Reação a colisão
+        //Reação a colisão: reposiciona o personagem apos colisão com o eixo x
         if(collidedX) 
         {
-        	position.x = lastX;
+        	Vector2 newPositionX;
+        	newPositionX = new Vector2(lastX - 1, position.y);       	
+        	setPosition(newPositionX); 	
         	velocity.x = 0;
         }
         
-        // Teste de colisão para baixo
-        if(velocity.y < 0) 
+        //colisão para baixo
+        if (direction.y < 0) 
         {
-        	// Diagonal superior de baixo
-        	collidedY = collisionLayer.getCell((int)(lastX / tileWidth), (int)(lastY / tileHeight)).getTile().getProperties().containsKey("blocked");
-        	System.out.println("Colidiu");
-        	
-        	// Baixo
-        	if(!collidedY) 
-            {
-	        	collidedY = collisionLayer.getCell((int)(((lastX + 35) / 2) / tileWidth), (int)(lastY / tileHeight)).getTile().getProperties().containsKey("blocked");
-	        	System.out.println("Colidiu");
-        	}
-        	
-        	// Diagonal inferior de baixo
-        	if(!collidedY) 
-            {
-	        	collidedY = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),(int)(lastY / tileHeight)).getTile().getProperties().containsKey("blocked");
-	        	System.out.println("Colidiu");
-        	}
-        }
-        
-        // Teste de colisão para cima
-        else if(velocity.y > 0) 
-        {
-        	// Diagonal superior de cima
-        	collidedY = collisionLayer.getCell((int)(lastX / tileWidth),(int)(lastY / tileHeight)).getTile().getProperties().containsKey("blocked");
-        	System.out.println("Colidiu");
-        	
-        	// Cima
-        	if(!collidedY) 
-            {
-	        	collidedY = collisionLayer.getCell((int)(((lastX + 35) / 2) / tileWidth),(int)((lastY + 30) / tileWidth)).getTile().getProperties().containsKey("blocked");
-	        	System.out.println("Colidiu");
-        	}
-        	
-        	// Diagonal inferior de cima
-        	if(!collidedY) 
-            {
-	        	collidedY = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),(int)((lastY + 30) / tileHeight)).getTile().getProperties().containsKey("blocked");
-	        	System.out.println("Colidiu");
-        	}
+        	collidedY = collidesBottom();
         } 
         
-        // Reação a colisão
+        //colisão para cima
+        else if (direction.y > 0) 
+        {
+        	collidedY = collidesTop();
+        }
+        
+        //Reação a colisão: reposiciona o personagem apos colisão com o eixo y
         if(collidedY) 
         {
-        	position.y = lastY;
+        	Vector2 newPositionY;
+        	newPositionY = new Vector2(position.x, lastY - 1);       	
+        	setPosition(newPositionY);
         	velocity.y = 0;
+        } 
+        animationManager.update(deltaTime); 
+    }
+
+    private boolean isCellBlocked(float x, float y) 
+    {
+        for (TiledMapTileLayer layer : collisionLayers) 
+        {
+            TiledMapTileLayer.Cell cell = layer.getCell((int) (x / layer.getTileWidth()), (int) (y / layer.getTileHeight()));
+            if (cell != null && cell.getTile() != null && cell.getTile().getProperties().containsKey("blocked")) 
+            {
+                return true;
+            }
         }
+        return false;
+    }
+    
+    public boolean collidesRight() 
+    {
+    	for (TiledMapTileLayer layer : collisionLayers) 
+        {
+            for (float step = 0; step < 128; step += layer.getTileHeight() / 2) 
+            {
+                if (isCellBlocked(getPositionX() + 228, getPositionY() + step)) 
+                {
+                	return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean collidesLeft() 
+    {
+    	for (TiledMapTileLayer layer : collisionLayers) 
+        {
+            for (float step = 0; step < 128; step += layer.getTileHeight() / 2) 
+            {
+                if (isCellBlocked(getPositionX(), getPositionY() + step)) 
+                {
+                    return true; 
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean collidesTop() 
+    {
+    	for (TiledMapTileLayer layer : collisionLayers) 
+        {
+            for (float step = 0; step < 228; step += layer.getTileWidth() / 2) 
+            {
+                if (isCellBlocked(getPositionX() + step, getPositionY() + 128)) 
+                {
+                	return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean collidesBottom() 
+    {
+    	for (TiledMapTileLayer layer : collisionLayers) 
+        {
+            for (float step = 0; step < 228; step += layer.getTileWidth() / 2) 
+            {
+                if (isCellBlocked(getPositionX() + step, getPositionY())) 
+                {
+                	return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void render(Batch batch) 

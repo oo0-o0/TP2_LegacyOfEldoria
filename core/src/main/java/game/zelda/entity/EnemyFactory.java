@@ -19,13 +19,13 @@ public class EnemyFactory
         {
             case 1:
                 animation = assetsManager.getAnimation("bat");
-                return new Bat(new Vector2(100, 100), animation);
+                return new Bat(new Vector2(800, 100), animation);
             case 2:
                 animation = assetsManager.getAnimation("crystalElemental");
-                return new CrystalElemental(new Vector2(200, 200), animation);
+                return new CrystalElemental(new Vector2(400, 200), animation);
             case 3:
                 animation = assetsManager.getAnimation("metalElemental");
-                return new MetalElemental(new Vector2(300, 300), animation);
+                return new MetalElemental(new Vector2(600, 300), animation);
             default:
                 throw new IllegalArgumentException("Tipo de inimigo desconhecido.");
         }

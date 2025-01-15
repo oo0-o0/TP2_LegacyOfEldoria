@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import game.zelda.states.MenuState;
-import game.zelda.states.PlayingState;
 
 public class MainGame extends ApplicationAdapter  
 {
@@ -20,7 +19,7 @@ public class MainGame extends ApplicationAdapter
         batch = new SpriteBatch();
         gameContext = new GameContext();
 
-        gameContext.setState(new PlayingState(gameContext));
+        gameContext.setState(new MenuState(gameContext));
     }
 
     @Override

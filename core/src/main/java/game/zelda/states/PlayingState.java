@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 
@@ -30,7 +29,6 @@ public class PlayingState implements GameState
     private BitmapFont font;
     private GameContext gameContext;
     private MoveCommand moveCommand;
-    private ShapeRenderer shapeRenderer;
     private InventoryGame inventory;
     private Map map;
 
@@ -42,17 +40,23 @@ public class PlayingState implements GameState
     @Override
     public void enter() 
     {
-        this.shapeRenderer = new ShapeRenderer();
         this.map = new Map();
+
+        List<TiledMapTileLayer> collisionLayers = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) 
+        {
+            collisionLayers.add((TiledMapTileLayer) map.getLayers().get(i));
+        }
+
         this.inventory = new InventoryGame();
 
-        this.player = new Player(100, 100, (TiledMapTileLayer) map.getLayers(), inventory);
+        this.player = new Player(100, 100, collisionLayers, inventory); 
         this.moveCommand = new MoveCommand(player, 250f);
 
         this.enemies = new ArrayList<>();
-        enemies.add(EnemyFactory.enemyCreation(1)); // Adiciona um Bat
-        enemies.add(EnemyFactory.enemyCreation(2)); // Adiciona um CrystalElemental
-        enemies.add(EnemyFactory.enemyCreation(3)); // Adiciona um MetalElemental
+        enemies.add(EnemyFactory.enemyCreation(1)); 
+        enemies.add(EnemyFactory.enemyCreation(2)); 
+        enemies.add(EnemyFactory.enemyCreation(3)); 
 
         font = AssetsManager.getInstance().getFont("healthBarFont");
     }
@@ -63,13 +67,21 @@ public class PlayingState implements GameState
         handleInput(deltaTime);
         player.update(deltaTime);
     
-        player.updateColisionMap();
-
-        for (Enemy enemy : enemies) {
+        for (Enemy enemy : enemies) 
+        {
             enemy.attackPlayer(player, deltaTime);
             moveEnemyTowardsPlayer(enemy, deltaTime);
             enemy.updateAnimation(deltaTime);
         }
+
+        for (Enemy enemy : new ArrayList<>(enemies)) 
+        {
+            if (!enemy.isAlive()) 
+            {
+                enemies.remove(enemy); 
+                continue;
+            }
+        }   
 
         // Morte
         if (player.currentHealth <= 0) 
@@ -115,7 +127,7 @@ public class PlayingState implements GameState
         // Ataque
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) 
         {
-            player.attack();
+            player.attack(enemies);
         }
 
         // Abrir/fechar o inventário
@@ -128,14 +140,14 @@ public class PlayingState implements GameState
     private void moveEnemyTowardsPlayer(Enemy enemy, float deltaTime) 
     {
         Vector2 direction = player.getPosition().cpy().sub(enemy.getPosition()).nor();
-        float speed = 20; 
+        float speed = 15; 
         enemy.getPosition().add(direction.scl(speed * deltaTime));
     }
 
     @Override
     public void render(SpriteBatch batch) 
     {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(0.5137f, 0.6431f, 0.2863f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     
         map.renderMapOnScreen();
