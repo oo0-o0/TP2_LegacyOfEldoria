@@ -1,8 +1,18 @@
 package game.zelda.player;
 
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 
 import game.zelda.AssetsManager;
 
@@ -13,16 +23,20 @@ public class Player
     private boolean isJumping;
     private boolean isRunning;
     public PlayerAnimationManager animationManager;
-    private TiledMapTileLayer collisionLayer;
+    private List<TiledMapTileLayer> collisionLayers;
+    private String blockedKey = "blocked";
+    private Vector2 direction;
     
-    public Player(float startX, float startY, TiledMapTileLayer collisionLayer) 
+    
+    public Player(float startX, float startY, List<TiledMapTileLayer> collisionLayers) 
     {
         this.position = new Vector2(startX, startY);
         this.velocity = new Vector2(0, 0);
         this.animationManager = new PlayerAnimationManager();
         this.isJumping = false;
         this.isRunning = false;
-        this.collisionLayer = collisionLayer;
+        this.collisionLayers = collisionLayers;
+        this.direction = new Vector2(0, 0);
 
         AssetsManager assetsManager = AssetsManager.getInstance();
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.IDLE, assetsManager.getAnimation("idle"));
@@ -33,22 +47,37 @@ public class Player
         animationManager.loadAnimation(PlayerAnimationManager.PlayerState.DEATH, assetsManager.getAnimation("death"));
     }
 
-    public Vector2 getPosition() 
+    public void setPosition(Vector2 position) {
+		this.position = position;
+	}
+    
+    public Vector2 getPosition() {
+    	return position;
+	}
+	
+	public float getPositionX() 
     {
-        return position;
+        return position.x;
+    }
+	
+	public float getPositionY() 
+    {
+        return position.y;
     }
 
     public void move(float dx, float dy) 
     {
+    	direction.set(dx, dy);
         position.add(dx, dy);
         if (!isJumping) 
         {
-            animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
+            animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);           
         }
     }
 
     public void stop() 
     {
+    	direction.set(0, 0);
         velocity.set(0, 0);
         if (!isJumping) 
         {
@@ -90,7 +119,11 @@ public class Player
     }
 
     public void update(float deltaTime) 
-    {
+    {       
+    	float lastX = getPositionX(), lastY = getPositionY();
+    	boolean collidedX = false, collidedY = false;
+    	
+      
         if (isJumping) {
             velocity.y -= 980 * deltaTime; 
             
@@ -102,7 +135,7 @@ public class Player
                     animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
                 }
             }
-        }        
+        } 
     
         if (animationManager.isAnimationFinished()) 
         {
@@ -113,134 +146,126 @@ public class Player
                 animationManager.setState(PlayerAnimationManager.PlayerState.IDLE);
             }
         }
-    
+        
         position.add(velocity.x * deltaTime, velocity.y * deltaTime);
-        animationManager.update(deltaTime);
+        animationManager.update(deltaTime);   
         
-    }
-    
-    public void updateColisionMap() 
-    {
-        float lastX = position.x, lastY = position.y, 
-        		tileWidth = collisionLayer.getTileWidth(),
-        		tileHeight = collisionLayer.getTileHeight();
-        boolean collidedX = false, collidedY = false;
         
-        //teste de colisão para esquerda
-        if(velocity.x < 0) {
-        	//diagonal superior esquerda
-        	collidedX = collisionLayer.getCell((int)(lastX / tileWidth),
-        			(int)((lastY + 30) / tileHeight)).getTile().
-        			getProperties().containsKey("blocked") ;
-        	System.out.println("Colidiu");
-        	
-        	//esquerda
-        	if(!collidedX) {
-	        	collidedX = collisionLayer.getCell((int)(lastX / tileWidth),
-	        			(int)(((lastY + 30) / 2) / tileHeight)).getTile().
-	        			getProperties().containsKey("blocked") ;
-	        	System.out.println("Colidiu");
-        	}
-        	
-        	//diagonal inferior esquerda
-        	if(!collidedX) {
-	        	collidedX = collisionLayer.getCell((int)(lastX / tileWidth),
-	        			(int)(lastY  / tileHeight)).getTile().
-	        			getProperties().containsKey("blocked") ;
-	        	System.out.println("Colidiu");
-        	}
+        /*	seção de codigo (parte da colisão) fortemente inspirada 
+         * em duas fontes, sendo elas:
+         * 
+         * 1 - https://github.com/MrBenC88/Simple-Tile-Map-ProgramLibGDX/tree/master
+         * 2 - https://www.youtube.com/watch?v=DOpqkaX9844&list=PLXY8okVWvwZ0qmqSBhOtqYRjzWtUCWylb&index=4
+         * 
+         */
+        
+        //colisão para a esquerda
+        if (direction.x  < 0) {
+        	collidedX = collidesLeft();
+        } 
+        
+      //colisão para a direita
+        else if (direction.x > 0) {
+        	collidedX = collidesRight();
         }
         
-        //teste de colisão para direita
-        else if(velocity.x > 0) {
-        	//diagonal superior direita
-        	collidedX = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),
-        			(int)((lastY + 30) / tileHeight)).getTile().
-        			getProperties().containsKey("blocked") ;
-        	System.out.println("Colidiu");
-        	
-        	//direita
-        	if(!collidedX) {
-	        	collidedX = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),
-	        			(int)(((lastY + 30) / 2) / tileHeight)).getTile().
-	        			getProperties().containsKey("blocked") ;
-	        	System.out.println("Colidiu");
-        	}
-        	
-        	//diagonal inferior direita
-        	if(!collidedX) {
-	        	collidedX = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),
-	        			(int)(lastY  / tileHeight)).getTile().
-	        			getProperties().containsKey("blocked") ;
-	        	System.out.println("Colidiu");
-        	}
-        }
-        
-        //reação a colisão
+      //Reação a colisão: reposiciona o personagem apos colisão com o eixo x
         if(collidedX) {
-        	position.x = lastX;
+        	Vector2 newPositionX;
+        	newPositionX = new Vector2(lastX - 1, position.y);       	
+        	setPosition(newPositionX); 	
         	velocity.x = 0;
         }
         
-        //teste de colisão para baixo
-        if(velocity.y < 0) {
-        	//diagonal superior de baixo
-        	collidedY = collisionLayer.getCell((int)(lastX / tileWidth),
-        			(int)(lastY / tileHeight)).getTile().
-        			getProperties().containsKey("blocked") ;
-        	System.out.println("Colidiu");
-        	
-        	//baixo
-        	if(!collidedY) {
-	        	collidedY = collisionLayer.getCell((int)(((lastX + 35) / 2) / tileWidth),
-	        			(int)(lastY / tileHeight)).getTile().
-	        			getProperties().containsKey("blocked") ;
-	        	System.out.println("Colidiu");
-        	}
-        	
-        	//diagonal inferior de baixo
-        	if(!collidedY) {
-	        	collidedY = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),
-	        			(int)(lastY / tileHeight)).getTile().
-	        			getProperties().containsKey("blocked") ;
-	        	System.out.println("Colidiu");
-        	}
-        }
-        
-        //teste de colisão para cima
-        else if(velocity.y > 0) {
-        	//diagonal superior de cima
-        	collidedY = collisionLayer.getCell((int)(lastX / tileWidth),
-        			(int)(lastY / tileHeight)).getTile().
-        			getProperties().containsKey("blocked") ;
-        	System.out.println("Colidiu");
-        	
-        	//cima
-        	if(!collidedY) {
-	        	collidedY = collisionLayer.getCell((int)(((lastX + 35) / 2) / tileWidth),
-	        			(int)((lastY + 30) / tileWidth)).getTile().
-	        			getProperties().containsKey("blocked") ;
-	        	System.out.println("Colidiu");
-        	}
-        	
-        	//diagonal inferior de cima
-        	if(!collidedY) {
-	        	collidedY = collisionLayer.getCell((int)((lastX + 35)/ tileWidth),
-	        			(int)((lastY + 30) / tileHeight)).getTile().
-	        			getProperties().containsKey("blocked") ;
-	        	System.out.println("Colidiu");
-        	}
+      //colisão para baixo
+        if (direction.y < 0) {
+        	collidedY = collidesBottom();
         } 
         
-      //reação a colisão
-        if(collidedY) {
-        	position.y = lastY;
-        	velocity.y = 0;
+      //colisão para cima
+        else if (direction.y > 0) {
+        	collidedY = collidesTop();
         }
+        
+      //Reação a colisão: reposiciona o personagem apos colisão com o eixo y
+        if(collidedY) {
+        	Vector2 newPositionY;
+        	newPositionY = new Vector2(position.x, lastY - 1);       	
+        	setPosition(newPositionY);
+        	velocity.y = 0;
+        }      
+    }
+    
+    private boolean isCellBlocked(float x, float y) {
+    	   	
+        for (TiledMapTileLayer layer : collisionLayers) {
+            TiledMapTileLayer.Cell cell = layer.getCell((int) (x / layer.getTileWidth()), (int) (y / layer.getTileHeight()));
+            if (cell != null && cell.getTile() != null && cell.getTile().getProperties().containsKey("blocked")) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean collidesRight() {
+    	for (TiledMapTileLayer layer : collisionLayers) {
+            for (float step = 0; step < 128; step += layer.getTileHeight() / 2) {
+                if (isCellBlocked(getPositionX() + 228, getPositionY() + step)) {
+                	return true;
+                }
+            }
+        }
+        return false;
     }
 
+    public boolean collidesLeft() {
+    	for (TiledMapTileLayer layer : collisionLayers) {
+            for (float step = 0; step < 128; step += layer.getTileHeight() / 2) {
+                if (isCellBlocked(getPositionX(), getPositionY() + step)) {
+                    return true;
+                    
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean collidesTop() {
+    	for (TiledMapTileLayer layer : collisionLayers) {
+            for (float step = 0; step < 228; step += layer.getTileWidth() / 2) {
+                if (isCellBlocked(getPositionX() + step, getPositionY() + 128)) {
+                	return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean collidesBottom() {
+    	for (TiledMapTileLayer layer : collisionLayers) {
+            for (float step = 0; step < 228; step += layer.getTileWidth() / 2) {
+                if (isCellBlocked(getPositionX() + step, getPositionY())) {
+                	return true;
+                }
+            }
+        }
+        return false;
+    }
+      
     public void render(Batch batch) 
     {
         batch.draw(animationManager.getCurrentFrame(), position.x, position.y);
+    }
+}
+
+class RectangleToPolygon {
+    public static Polygon convertRectangleToPolygon(Rectangle rectangle) {
+        float[] vertices = new float[]{
+            rectangle.x, rectangle.y, // canto inferior esquerdo
+            rectangle.x + rectangle.width, rectangle.y, // canto inferior direito
+            rectangle.x + rectangle.width, rectangle.y + rectangle.height, // canto superior direito
+            rectangle.x, rectangle.y + rectangle.height // canto superior esquerdo
+        };
+        return new Polygon(vertices);
     }
 }

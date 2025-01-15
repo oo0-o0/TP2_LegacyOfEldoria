@@ -1,5 +1,8 @@
 package game.zelda.states;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
@@ -8,7 +11,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
 import game.zelda.GameContext;
-import game.zelda.camera.CameraController;
 import game.zelda.player.commands.AttackCommand;
 import game.zelda.player.commands.MoveCommand;
 import game.zelda.player.Player;
@@ -21,7 +23,6 @@ public class PlayingState implements GameState
     private GameContext gameContext;
     private MoveCommand moveCommand;
     private AttackCommand attackCommand;
-    private CameraController cameraController;
     private ShapeRenderer shapeRenderer;
     private Map map;
 
@@ -30,10 +31,15 @@ public class PlayingState implements GameState
         this.gameContext = gameContext;
         float viewportWidth = Gdx.graphics.getWidth();
         float viewportHeight = Gdx.graphics.getHeight();
-        this.cameraController = new CameraController(viewportWidth, viewportHeight);
         this.shapeRenderer = new ShapeRenderer(); 
         this.map = new Map();
-        this.player = new Player(100, 100, (TiledMapTileLayer) map.getLayers());
+        
+        List<TiledMapTileLayer> collisionLayers = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            collisionLayers.add((TiledMapTileLayer) map.getLayers().get(i));
+        }
+        
+        this.player = new Player(100, 100, collisionLayers);
         this.moveCommand = new MoveCommand(player, 250f); 
         this.attackCommand = new AttackCommand(player);
         
@@ -45,8 +51,7 @@ public class PlayingState implements GameState
         handleInput(deltaTime);
         player.update(deltaTime);
         
-        cameraController.update(player.getPosition(), 1080, 600); 
-        player.updateColisionMap();
+       // player.updateColisionMap();
     }
 
     private void handleInput(float deltaTime) 
@@ -85,39 +90,15 @@ public class PlayingState implements GameState
     @Override
     public void render(SpriteBatch batch) 
     {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(0.5137f, 0.6431f, 0.2863f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
         map.renderMapOnScreen();
 
-        batch.setProjectionMatrix(cameraController.getMainCamera().combined);
         batch.begin();
         player.render(batch);
         batch.end();
 
-        renderMiniMap(batch);
-    }
-
-    private void renderMiniMap(SpriteBatch batch) 
-    {
-        int width = Gdx.graphics.getWidth() / 4;
-        int height = Gdx.graphics.getHeight() / 4;
-        int x = Gdx.graphics.getWidth() - width;
-        int y = Gdx.graphics.getHeight() - height;
-    
-        batch.flush();
-        Gdx.gl.glViewport(x, y, width, height);
-    
-        batch.setProjectionMatrix(cameraController.getMiniMapCamera().combined);
-        batch.begin();
-        player.render(batch);
-        batch.end();
-    
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(1, 1, 1, 1); 
-        shapeRenderer.rect(x, y, width, height);
-        shapeRenderer.end();
     }
 
     @Override
