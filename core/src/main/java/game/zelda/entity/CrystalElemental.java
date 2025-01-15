@@ -6,6 +6,6 @@ public class CrystalElemental extends Enemy
 {
     public CrystalElemental() 
     {
-        super(3, 2, new Vector2(79, 30), "enemy2.png");
+        super(80, 6, new Vector2(79, 30), "assets/crystal/idle/idle_1.png");
     }
 }

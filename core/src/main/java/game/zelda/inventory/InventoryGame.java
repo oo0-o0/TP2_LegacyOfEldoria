@@ -55,12 +55,12 @@ public class InventoryGame implements Subject
         Random random = new Random();
         for (int i = 0; i < itemTextures.length; i++) 
         {
-            float x = random.nextInt(Gdx.graphics.getWidth() - 32); // Posição aleatória no eixo X
-            float y = random.nextInt(Gdx.graphics.getHeight() - 32); // Posição aleatória no eixo Y
+            float x = random.nextInt(Gdx.graphics.getWidth() - 32); 
+            float y = random.nextInt(Gdx.graphics.getHeight() - 32); // Posição 
             itemsOnMap.add(new Item(itemTextures[i], new Rectangle(x, y, 32, 32), itemNames[i]));
         }
 
-        // Outra opcao caso isso de merda pelo mapa (tipo agora ele vai em areas que o divo nao anda,kkkk) so mudar o x e y
+        // Outra opcao caso isso de merda pelo mapa (tipo agora eles vao em areas que o divo nao anda,kkkk) so mudar o x e y, esses 200 e 400
         /*itemsOnMap.add(new Item(itemTexture1, new Rectangle(200, 200, 32, 32), "Poção"));
         itemsOnMap.add(new Item(itemTexture2, new Rectangle(400, 400, 32, 32), "Livro"));
         itemsOnMap.add(new Item(itemTexture3, new Rectangle(300, 400, 32, 32), "Cálice"));

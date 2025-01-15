@@ -1,5 +1,8 @@
 package game.zelda.states;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
@@ -8,10 +11,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Vector2;
 
 import game.zelda.AssetsManager;
 import game.zelda.GameContext;
-import game.zelda.camera.CameraController;
+import game.zelda.entity.Enemy;
+import game.zelda.entity.EnemyFactory;
 import game.zelda.inventory.InventoryGame;
 import game.zelda.map.Map;
 import game.zelda.player.commands.MoveCommand;
@@ -21,10 +26,10 @@ import game.zelda.player.PlayerAnimationManager;
 public class PlayingState implements GameState 
 {
     private Player player;
+    private List<Enemy> enemies;
     private BitmapFont font;
     private GameContext gameContext;
     private MoveCommand moveCommand;
-    //private CameraController cameraController;
     private ShapeRenderer shapeRenderer;
     private InventoryGame inventory;
     private Map map;
@@ -37,16 +42,18 @@ public class PlayingState implements GameState
     @Override
     public void enter() 
     {
-        float viewportWidth = Gdx.graphics.getWidth();
-        float viewportHeight = Gdx.graphics.getHeight();
-        //this.cameraController = new CameraController(viewportWidth, viewportHeight);
         this.shapeRenderer = new ShapeRenderer();
-
         this.map = new Map();
         this.inventory = new InventoryGame();
 
         this.player = new Player(100, 100, (TiledMapTileLayer) map.getLayers(), inventory);
         this.moveCommand = new MoveCommand(player, 250f);
+
+        this.enemies = new ArrayList<>();
+        enemies.add(EnemyFactory.enemyCreation(1)); // Adiciona um Bat
+        enemies.add(EnemyFactory.enemyCreation(2)); // Adiciona um CrystalElemental
+        enemies.add(EnemyFactory.enemyCreation(3)); // Adiciona um MetalElemental
+
         font = AssetsManager.getInstance().getFont("healthBarFont");
     }
 
@@ -56,24 +63,26 @@ public class PlayingState implements GameState
         handleInput(deltaTime);
         player.update(deltaTime);
     
-        //cameraController.update(player.getPosition());
         player.updateColisionMap();
 
+        for (Enemy enemy : enemies) 
+        {
+            enemy.attackPlayer(player, deltaTime);
+    
+            moveEnemyTowardsPlayer(enemy, deltaTime);
+        }
+
+        // Morte
         if (player.currentHealth <= 0) 
         {
-            player.animationManager.setState(PlayerAnimationManager.PlayerState.DEATH);
-
-            if (player.animationManager.isAnimationFinished()) 
-            {
-                gameContext.setState(new GameOverState(gameContext));
-            }
+            gameContext.setState(new GameOverState(gameContext));
             return; 
         }
 
+        // Vitória
         if (inventory.getInventoryItems().size == inventory.getInventorySize()) 
         {
             //Som/animacao de vitoria sla a ser adiicionado
-
             gameContext.setState(new WinningState(gameContext));
             return; 
         }
@@ -118,6 +127,13 @@ public class PlayingState implements GameState
         }
     }
 
+    // Método para mover inimigo em direção ao jogador
+    private void moveEnemyTowardsPlayer(Enemy enemy, float deltaTime) 
+    {
+        Vector2 direction = player.getPosition().cpy().sub(enemy.getPosition()).nor();
+        enemy.getPosition().add(direction.scl(50 * deltaTime)); 
+    }
+
     @Override
     public void render(SpriteBatch batch) 
     {
@@ -131,17 +147,19 @@ public class PlayingState implements GameState
     
         player.render(batch);
 
+        for (Enemy enemy : enemies) 
+        {
+            batch.draw(new Texture(enemy.getImgPath()), enemy.getPosition().x, enemy.getPosition().y);
+        }
+
         Texture healthBarBackground = new Texture("assets/ui/lifeUI.png");
         batch.draw(healthBarBackground, -70, Gdx.graphics.getHeight() - 120, 320, 180);
         font.draw(batch, + player.currentHealth + "/" + player.maxHealth, 60, Gdx.graphics.getHeight() - 20);
 
         inventory.renderMapItems(batch);
-
         batch.end();
     
-        //batch.setProjectionMatrix(cameraController.getUICamera().combined);
         batch.begin();
-    
         inventory.renderUI(batch);
         batch.end();
     
@@ -151,39 +169,8 @@ public class PlayingState implements GameState
             inventory.renderInventory(batch);
             batch.end();
         }
-    
-        //renderMiniMap(batch);
     }    
 
-    private void renderMiniMap(SpriteBatch batch) 
-    {
-        int width = Gdx.graphics.getWidth() / 4;
-        int height = Gdx.graphics.getHeight() / 4;
-        int x = Gdx.graphics.getWidth() - width;
-        int y = Gdx.graphics.getHeight() - height;
-    
-        batch.flush();
-        Gdx.gl.glViewport(x, y, width, height);
-    
-       // batch.setProjectionMatrix(cameraController.getMiniMapCamera().combined);
-        batch.begin();
-
-        // Aqui tambem tudo o que for renderizado precisa ser de novo (sim nao sei pq, aaaaa)
-        // tipo os inimigos, mapa, etc
-        map.renderMapOnScreen();
-
-        player.render(batch);
-        inventory.renderMapItems(batch);
-
-        batch.end();
-    
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-    
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(1, 1, 1, 1);
-        shapeRenderer.rect(x, y, width, height);
-        shapeRenderer.end();
-    }
     
     @Override
     public void exit() 

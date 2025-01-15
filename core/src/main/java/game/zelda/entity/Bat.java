@@ -6,6 +6,6 @@ public class Bat extends Enemy
 {
     public Bat() 
     {
-        super(2, 1, new Vector2(35, 60), "witch.png");
+        super(60, 4, new Vector2(35, 60), "assets/Bat/BatIdleMoving/BatIdleMoving1.png");
     }
 }

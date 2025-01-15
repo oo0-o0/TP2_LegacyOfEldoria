@@ -6,6 +6,6 @@ public class MetalElemental extends Enemy
 {
     public MetalElemental() 
     {
-        super(4, 2, new Vector2(79, 30), "enemy3.png");
+        super(70, 5, new Vector2(79, 30), "assets/metal/01_idle/01_idle_1.png");
     }
 }
