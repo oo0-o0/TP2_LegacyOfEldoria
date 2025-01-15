@@ -51,7 +51,6 @@ public class InventoryGame implements Subject
         Texture[] itemTextures = {itemTexture1, itemTexture2, itemTexture3, itemTexture4, itemTexture5, itemTexture6, itemTexture7, itemTexture8};
         String[] itemNames = {"Poção", "Livro", "Cálice", "Chave", "Colar", "Poção da Vida", "Varinha", "Arma"};
 
-        // Coloca eles em lugares aleatorios
         Random random = new Random();
         for (int i = 0; i < itemTextures.length; i++) 
         {
@@ -59,16 +58,6 @@ public class InventoryGame implements Subject
             float y = random.nextInt(Gdx.graphics.getHeight() - 32); // Posição 
             itemsOnMap.add(new Item(itemTextures[i], new Rectangle(x, y, 32, 32), itemNames[i]));
         }
-
-        // Outra opcao caso isso de merda pelo mapa (tipo agora eles vao em areas que o divo nao anda,kkkk) so mudar o x e y, esses 200 e 400
-        /*itemsOnMap.add(new Item(itemTexture1, new Rectangle(200, 200, 32, 32), "Poção"));
-        itemsOnMap.add(new Item(itemTexture2, new Rectangle(400, 400, 32, 32), "Livro"));
-        itemsOnMap.add(new Item(itemTexture3, new Rectangle(300, 400, 32, 32), "Cálice"));
-        itemsOnMap.add(new Item(itemTexture4, new Rectangle(100, 400, 32, 32), "Chave"));
-        itemsOnMap.add(new Item(itemTexture5, new Rectangle(440, 400, 32, 32), "Colar"));
-        itemsOnMap.add(new Item(itemTexture6, new Rectangle(400, 300, 32, 32), "Poção da Vida"));
-        itemsOnMap.add(new Item(itemTexture7, new Rectangle(400, 100, 32, 32), "Varinha"));
-        itemsOnMap.add(new Item(itemTexture8, new Rectangle(310, 150, 32, 32), "Arma"));*/
     }
 
     public boolean isInventoryOpen() 

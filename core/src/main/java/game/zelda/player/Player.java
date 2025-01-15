@@ -5,16 +5,9 @@ import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
-import java.util.List;
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 
 import game.zelda.AssetsManager;
 import game.zelda.entity.Enemy;
@@ -114,7 +107,7 @@ public class Player implements Observer
 
             for (Enemy enemy : enemies) 
             {
-                System.out.println("Distância para inimigo: " + position.dst(enemy.getPosition()));
+                //System.out.println("Distância para inimigo: " + position.dst(enemy.getPosition()));
                 if (isEnemyInRange(enemy)) 
                 {
                     enemy.takeDamage(damage);
@@ -152,7 +145,7 @@ public class Player implements Observer
         if (event instanceof Item) 
         {
             Item item = (Item) event;
-            System.out.println("Item coletado: " + item.getName());
+            //System.out.println("Item coletado: " + item.getName());
             if (itemCollectSound != null) 
             {
                 itemCollectSound.play();
