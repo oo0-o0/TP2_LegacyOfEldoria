@@ -26,6 +26,7 @@ Durante sua jornada, Kael enfrentará perigosos desafios, resolverá enigmas esq
 
 
 ! **Sobre o Projeto**
+
 Este projeto foi desenvolvido como trabalho da disciplina Linguagens e Técnicas de Programação II do CEFET-MG, com o objetivo de recriar um jogo clássico utilizando LibGDX e Java, aplicando padrões de projeto na sua arquitetura. O grupo escolheu recriar o clássico The Legend of Zelda, mantendo a jogabilidade de exploração e combate, mas com identidade visual e narrativa próprias.
 
 · 　　 ⋆ 　　　 ˚ ˚ 　　 ✦  
